@@ -15,6 +15,7 @@ import {
   // Container,
   Media,
 } from "reactstrap";
+import { Popup } from 'reactjs-popup';
 import { useNavigate } from "react-router-dom";
 
 const AdminNavbar = (props) => {
@@ -79,7 +80,28 @@ const AdminNavbar = (props) => {
                 <DropdownItem divider />
                 <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
                   <i className="ni ni-user-run" />
-                  <span>Logout</span>
+                  <Popup
+                    className='popup'
+                    trigger={<button className='rdinppx1' type='submit' onClick={() => navigate("")} position="center">Log out</button>}
+                    modal
+                    closeOnDocumentClick
+                    contentStyle={{ maxWidth: '300px', padding: '20px',background:"#fff" }}
+                    overlayStyle={{ background: 'rgba(0, 0, 0, 0.7)' }}
+                >
+                    {(close) => (
+                        <div>
+                            <h2 className='text-center d-flex justfy-content-center align-item-center readyreadeem'>Are you sure you want to Log out</h2>
+                            {/* <p>Are you sure you want to proceed?</p> */}
+                            <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>               
+                                <button className='mainbuttonss ' onClick={() => {
+                                    // handleNo();
+                                    // close();
+                                }}>No</button>
+                                  <button className='mainbuttonss' type='submit' >Yes</button>
+                            </div>
+                        </div>
+                    )}
+                </Popup>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>

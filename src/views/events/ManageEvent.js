@@ -1,9 +1,12 @@
-
-import React from "react";
-import '../../assets/css/argon-dashboard-react.min.css';
+import React, { useEffect, useState } from "react";
+import "../../assets/css/argon-dashboard-react.min.css";
 import {
   Card,
-  CardBody, CardTitle, Container, Row, Col,
+  CardBody,
+  CardTitle,
+  Container,
+  Row,
+  Col,
   Table,
   CardHeader,
   CardFooter,
@@ -19,27 +22,55 @@ import {
   InputGroup,
 } from "reactstrap";
 
-
+import { Popup } from "reactjs-popup";
 import Header from "components/Headers/Header.js";
 
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import { Urls } from "utilities/Urls";
+import { getEvent } from "services/Event";
+import { getOrganizationById } from "services/Organization";
+import { delEvent } from "services/Event";
 
 function ManageEvent() {
-
   const navigate = useNavigate();
+  const [eventList, setEventList] = useState([]);
+  const [eventId, setEventId] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    getEvent().then((r) => {
+      let response = mergeOrg(r.data);
+      setEventList(response);
+    });
+  }, []);
+
+  const mergeOrg = (data) => {
+    let events = [];
+    data.map((e) => {
+      getOrganizationById(e.orgId).then((o) => {
+        // console.log({...e,orgName:o.data.organizationName})
+        events.push({ ...e, orgName: o.data.organizationName });
+      });
+    });
+    return events;
+  };
 
   const navigateHome = () => {
-      // 👇️ navigate to /
-      navigate('/Events/createvent');
-    };
+    // 👇️ navigate to /
+    navigate("/Events/createvent");
+  };
   return (
     <>
       <Header />
 
       <div className="mb-3 p-4 mb-6 admin">
-        <div><h1 className="admin">Events</h1></div>
-        <div><h5 className="admin">Welcome to your Events Manager</h5></div>
+        <div>
+          <h1 className="admin">Events</h1>
+        </div>
+        <div>
+          <h5 className="admin">Welcome to your Events Manager</h5>
+        </div>
       </div>
 
       {/* Page content */}
@@ -63,11 +94,11 @@ function ManageEvent() {
                         </InputGroup>
                       </FormGroup>
                     </Form>
-
                   </div>
                   <div>
-                    <button onClick={navigateHome} className="mainbuttons">Add Event</button>
-
+                    <button onClick={navigateHome} className="mainbuttons">
+                      Add Event
+                    </button>
                   </div>
                 </div>
               </CardHeader>
@@ -82,121 +113,126 @@ function ManageEvent() {
                     <th scope="col"># Groups</th>
                     <th scope="col">Group Size</th>
                     <th scope="col">Group Time</th>
-                    <th scope="col" >Organization</th>
-                    <th scope="col" >Event</th>
-                    <th scope="col" >Location</th>
-                    <th scope="col" >Start Time </th>
-                    <th scope="col" >End Time</th>
-                    <th scope="col" >Action</th>
-                    <th scope="col" >Report</th>
+                    <th scope="col">Organization</th>
+                    <th scope="col">Event</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Start Time </th>
+                    <th scope="col">End Time</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Report</th>
                   </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>400</td>
-                    <td>8</td>
-                    <td>
-                      50
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">1 hour</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                    fima
-                    </td>
-                    <td className="text-right">
-                      food distribution
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St
-                    </td>
-                    <td className="text-right">
-                    2/10/2023 11:00 AM
-                    </td>
-                    <td className="text-right">
-                    2/10/2023 11:00 pm
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div>
-                        <img width={30} src={require("../../assets/img/imges/Group (2).png")}  alt=""/>
+                {loading ? (
+                  <p>loading</p>
+                ) : (
+                  <tbody>
+                    {eventList.map((e, index) => (
+                      <tr>
+                        <th scope="row">
+                          <Media className="align-items-center">
+                            <Media>
+                              <span className="mb-0 text-sm">{index + 1}</span>
+                            </Media>
+                          </Media>
+                        </th>
+                        <td>{e.eventCapacity}</td>
+                        <td>8</td>
+                        <td>{Math.floor(e.eventCapacity / 8)}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">
+                              {e.groupServicePeriod} hour
+                            </span>
                           </div>
-                       
-                      </div>
-                    </td>
-                 
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>400</td>
-                    <td>8</td>
-                    <td>
-                      50
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">1 hour</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                    fima
-                    </td>
-                    <td className="text-right">
-                      food distribution
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St
-                    </td>
-                    <td className="text-right">
-                    2/10/2023 11:00 AM
-                    </td>
-                    <td className="text-right">
-                    2/10/2023 11:00 pm
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div> 
-                        <img width={30} src={require("../../assets/img/imges/Group (2).png")}  alt=""/>
-                        </div>
-                       
-                      </div>
-                    </td>
-                 
-                  </tr>   
-                </tbody>
+                        </td>
+                        <td className="text-right">{e.orgName}</td>
+                        <td className="text-right">{e.eventType}</td>
+                        <td className="text-right">{e.addresses[0].house}</td>
+                        <td className="text-right">2/10/2023 11:00 AM</td>
+                        <td className="text-right">2/10/2023 11:00 pm</td>
+                        <td className="text-right">
+                          <div className="d-flex">
+                            <div>
+                              <button className="edit mr-2">Edit</button>
+                            </div>
+                            <div>
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setEventId(e._id)}
+                                  >
+                                    Delete
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  maxWidth: "300px",
+                                  padding: "20px",
+                                  background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => (
+                                  <div>
+                                    <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                                      Are you sure you want to delete this item
+                                    </h2>
+                                    {/* <p>Are you sure you want to proceed?</p> */}
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-evenly",
+                                      }}
+                                    >
+                                      <button
+                                        className="mainbuttonss "
+                                        onClick={() => {
+                                          // handleNo();
+                                          close();
+                                        }}
+                                      >
+                                        No
+                                      </button>
+                                      <button
+                                        className="mainbuttonss"
+                                        type="submit"
+                                        onClick={() => {
+                                          delEvent(eventId).then(() => {
+                                            window.location.reload()
+                                          });
+                                        }}
+                                      >
+                                        Yes
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </Popup>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="text-right">
+                          <div className="d-flex">
+                            <div>
+                              <img
+                                width={30}
+                                src={require("../../assets/img/imges/Group (2).png")}
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
               </Table>
             </Card>
             <CardFooter className="py-4">
@@ -205,7 +241,7 @@ function ManageEvent() {
                   className="pagination justify-content-end mb-0"
                   listClassName="justify-content-end mb-0"
                 >
-                  <PaginationItem >
+                  <PaginationItem>
                     <PaginationLink
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
@@ -215,7 +251,7 @@ function ManageEvent() {
                       <span className="sr-only">Previous</span>
                     </PaginationLink>
                   </PaginationItem>
-                  <PaginationItem >
+                  <PaginationItem>
                     <PaginationLink
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
@@ -267,11 +303,9 @@ function ManageEvent() {
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            New <br /> Accounts
+                            New Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            125
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">125</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -281,7 +315,8 @@ function ManageEvent() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-success mr-2">
-                          <i className="fa fa-arrow-up" />+02%
+                          <i className="fa fa-arrow-up" />
+                          +02%
                         </span>{" "}
                         <span className="text-nowrap">1 day</span>
                       </p>
@@ -299,9 +334,7 @@ function ManageEvent() {
                           >
                             Total Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            5000
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">5000</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -329,9 +362,7 @@ function ManageEvent() {
                           >
                             Active Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            3000
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">3000</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -341,7 +372,8 @@ function ManageEvent() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-warning mr-2">
-                          <i className="fas fa-arrow-down" />+14%
+                          <i className="fas fa-arrow-down" />
+                          +14%
                         </span>{" "}
                         <span className="text-nowrap">30 days</span>
                       </p>
@@ -369,7 +401,8 @@ function ManageEvent() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-success mr-2">
-                          <i className="fas fa-arrow-up" />+21%
+                          <i className="fas fa-arrow-up" />
+                          +21%
                         </span>{" "}
                         <span className="text-nowrap">30 days</span>
                       </p>
@@ -381,10 +414,8 @@ function ManageEvent() {
           </Container>
         </div>
       </Container>
-
-
     </>
   );
-};
+}
 
 export default ManageEvent;

@@ -1,9 +1,12 @@
-
-import React from "react";
-import '../../assets/css/argon-dashboard-react.min.css';
+import React, { useEffect, useState } from "react";
+import "../../assets/css/argon-dashboard-react.min.css";
 import {
   Card,
-  CardBody, CardTitle, Container, Row, Col,
+  CardBody,
+  CardTitle,
+  Container,
+  Row,
+  Col,
   Table,
   CardHeader,
   CardFooter,
@@ -19,20 +22,40 @@ import {
   InputGroup,
 } from "reactstrap";
 
-
 import Header from "../../components/Headers/Header.js";
-
-
+import axios from "axios";
 
 function ClientsRecord() {
+  const [clientList, setClientList] = useState([])
 
+  useEffect(() => {
+
+    const options = {
+      method: "GET",
+      url: "https://cutz-production.up.railway.app/api/v1/event",
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+
+  }, []);
   return (
     <>
       <Header />
 
       <div className="mb-3 p-4 mb-6 admin">
-        <div><h1 className="admin">Users Record</h1></div>
-        <div><h5 className="admin">Welcome to your Users Record Manager</h5></div>
+        <div>
+          <h1 className="admin">Users Record</h1>
+        </div>
+        <div>
+          <h5 className="admin">Welcome to your Users Record Manager</h5>
+        </div>
       </div>
 
       {/* Page content */}
@@ -56,7 +79,6 @@ function ClientsRecord() {
                         </InputGroup>
                       </FormGroup>
                     </Form>
-
                   </div>
                   {/* <div>
                     <button className="mainbuttons">Add Admin</button>
@@ -75,11 +97,11 @@ function ClientsRecord() {
                     <th scope="col">Last Name</th>
                     <th scope="col">Family #</th>
                     <th scope="col">Organization</th>
-                    <th scope="col" >Event</th>
-                    <th scope="col" >Location</th>
-                    <th scope="col" >Reserved Time</th>
-                    <th scope="col" >Status</th>
-                    <th scope="col" >Event ID</th>
+                    <th scope="col">Event</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Reserved Time</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Event ID</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -87,129 +109,86 @@ function ClientsRecord() {
                     <th scope="row">
                       <Media className="align-items-center">
                         <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
+                          <span className="mb-0 text-sm">001</span>
                         </Media>
                       </Media>
                     </th>
                     <td>joe</td>
                     <td>David</td>
-                    <td>
-                      6
-                    </td>
+                    <td>6</td>
                     <td>
                       <div className="d-flex align-items-center">
                         <span className="mr-2">FIMA</span>
                       </div>
                     </td>
-                    <td className="text-right">
-                    Food Distribution
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St 
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                     0001
-                    </td>
+                    <td className="text-right">Food Distribution</td>
+                    <td className="text-right">26255 Schoolcraft St</td>
+                    <td className="text-right">2/12/2023 1:00 PM</td>
+                    <td className="text-right">Present</td>
+                    <td className="text-right">0001</td>
                     {/* <td className="text-right"> */}
-                      {/* <div className="d-flex"> */}
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        {/* <div><button className="delete">Cancel</button></div> */}
-                      {/* </div> */}
+                    {/* <div className="d-flex"> */}
+                    {/* <div><button className="edit mr-2">Edit</button></div> */}
+                    {/* <div><button className="delete">Cancel</button></div> */}
+                    {/* </div> */}
                     {/* </td> */}
                   </tr>
                   <tr>
                     <th scope="row">
                       <Media className="align-items-center">
                         <Media>
-                          <span className="mb-0 text-sm">
-                            002
-                          </span>
+                          <span className="mb-0 text-sm">002</span>
                         </Media>
                       </Media>
                     </th>
                     <td>joe</td>
                     <td>David</td>
-                    <td>
-                      6
-                    </td>
+                    <td>6</td>
                     <td>
                       <div className="d-flex align-items-center">
                         <span className="mr-2">FIMA</span>
                       </div>
                     </td>
-                    <td className="text-right">
-                    Food Distribution
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St 
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                     0003
-                    </td>
+                    <td className="text-right">Food Distribution</td>
+                    <td className="text-right">26255 Schoolcraft St</td>
+                    <td className="text-right">2/12/2023 1:00 PM</td>
+                    <td className="text-right">Present</td>
+                    <td className="text-right">0003</td>
                     {/* <td className="text-right"> */}
-                      {/* <div className="d-flex"> */}
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        {/* <div><button className="delete">Cancel</button></div> */}
-                      {/* </div> */}
+                    {/* <div className="d-flex"> */}
+                    {/* <div><button className="edit mr-2">Edit</button></div> */}
+                    {/* <div><button className="delete">Cancel</button></div> */}
+                    {/* </div> */}
                     {/* </td> */}
                   </tr>
                   <tr>
                     <th scope="row">
                       <Media className="align-items-center">
                         <Media>
-                          <span className="mb-0 text-sm">
-                            003
-                          </span>
+                          <span className="mb-0 text-sm">003</span>
                         </Media>
                       </Media>
                     </th>
                     <td>joe</td>
                     <td>David</td>
-                    <td>
-                      6
-                    </td>
+                    <td>6</td>
                     <td>
                       <div className="d-flex align-items-center">
                         <span className="mr-2">FIMA</span>
                       </div>
                     </td>
-                    <td className="text-right">
-                    Food Distribution
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St 
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                     0003
-                    </td>
+                    <td className="text-right">Food Distribution</td>
+                    <td className="text-right">26255 Schoolcraft St</td>
+                    <td className="text-right">2/12/2023 1:00 PM</td>
+                    <td className="text-right">Present</td>
+                    <td className="text-right">0003</td>
                     {/* <td className="text-right"> */}
-                      {/* <div className="d-flex"> */}
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        {/* <div><button className="delete">Cancel</button></div> */}
-                      {/* </div> */}
+                    {/* <div className="d-flex"> */}
+                    {/* <div><button className="edit mr-2">Edit</button></div> */}
+                    {/* <div><button className="delete">Cancel</button></div> */}
+                    {/* </div> */}
                     {/* </td> */}
                   </tr>
-                
                 </tbody>
               </Table>
             </Card>
@@ -219,7 +198,7 @@ function ClientsRecord() {
                   className="pagination justify-content-end mb-0"
                   listClassName="justify-content-end mb-0"
                 >
-                  <PaginationItem >
+                  <PaginationItem>
                     <PaginationLink
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
@@ -229,7 +208,7 @@ function ClientsRecord() {
                       <span className="sr-only">Previous</span>
                     </PaginationLink>
                   </PaginationItem>
-                  <PaginationItem >
+                  <PaginationItem>
                     <PaginationLink
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
@@ -281,11 +260,9 @@ function ClientsRecord() {
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            New <br /> Accounts
+                            New Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            125
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">125</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -295,7 +272,8 @@ function ClientsRecord() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-success mr-2">
-                          <i className="fa fa-arrow-up" />+02%
+                          <i className="fa fa-arrow-up" />
+                          +02%
                         </span>{" "}
                         <span className="text-nowrap">1 day</span>
                       </p>
@@ -313,9 +291,7 @@ function ClientsRecord() {
                           >
                             Total Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            5000
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">5000</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -343,9 +319,7 @@ function ClientsRecord() {
                           >
                             Active Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            3000
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">3000</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -355,7 +329,8 @@ function ClientsRecord() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-warning mr-2">
-                          <i className="fas fa-arrow-down" />+14%
+                          <i className="fas fa-arrow-down" />
+                          +14%
                         </span>{" "}
                         <span className="text-nowrap">30 days</span>
                       </p>
@@ -383,7 +358,8 @@ function ClientsRecord() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-success mr-2">
-                          <i className="fas fa-arrow-up" />+21%
+                          <i className="fas fa-arrow-up" />
+                          +21%
                         </span>{" "}
                         <span className="text-nowrap">30 days</span>
                       </p>
@@ -395,10 +371,8 @@ function ClientsRecord() {
           </Container>
         </div>
       </Container>
-
-
     </>
   );
-};
+}
 
 export default ClientsRecord;

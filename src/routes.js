@@ -27,7 +27,7 @@ var routes = [
 		path: "/clients",
 		name: "Clients",
 		icon: "fas fa-users-cog",
-		layout: "/admin",
+		// layout: "/admin",
 		children: [
 			{
 				path: "/admin/clients/manageclients",

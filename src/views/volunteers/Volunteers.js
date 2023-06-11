@@ -19,7 +19,7 @@ import {
   InputGroup,
 } from "reactstrap";
 
-
+import { Popup } from 'reactjs-popup';
 import Header from "components/Headers/Header.js";
 
 
@@ -134,7 +134,30 @@ function Volunteers() {
                     </td>
                     <td className="text-right">
                       <div className="d-flex">
-                        <div><button className="edit mr-2">Delete</button></div>
+                      <div className="mr-2">
+                          <Popup
+                            className='popup'
+                            trigger={<button className='edit' type='submit' position="center">Delete</button>}
+                            modal
+                            closeOnDocumentClick
+                            contentStyle={{ maxWidth: '300px', padding: '20px', background: "#fff" }}
+                            overlayStyle={{ background: 'rgba(0, 0, 0, 0.7)' }}
+                          >
+                            {(close) => (
+                              <div>
+                                <h2 className='text-center d-flex justfy-content-center align-item-center readyreadeem'>Are you sure you want to delete this item</h2>
+                                {/* <p>Are you sure you want to proceed?</p> */}
+                                <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                                  <button className='mainbuttonss ' onClick={() => {
+                                    // handleNo();
+                                    close();
+                                  }}>No</button>
+                                  <button className='mainbuttonss' type='submit' >Yes</button>
+                                </div>
+                              </div>
+                            )}
+                          </Popup>
+                        </div>
                         <div><button className="delete">Ban</button></div>
                       </div>
                     </td>
@@ -315,7 +338,7 @@ function Volunteers() {
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            New <br /> Accounts
+                            New Accounts
                           </CardTitle>
                           <span className="h2 font-weight-bold mb-0">
                             125

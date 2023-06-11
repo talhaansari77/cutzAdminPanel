@@ -1,9 +1,13 @@
-import React from "react";
-// reactstrap 
-import '../assets/css/argon-dashboard-react.min.css';
+import React, { useEffect, useState } from "react";
+// reactstrap
+import "../assets/css/argon-dashboard-react.min.css";
 import {
   Card,
-  CardBody, CardTitle, Container, Row, Col,
+  CardBody,
+  CardTitle,
+  Container,
+  Row,
+  Col,
   Table,
   CardHeader,
   CardFooter,
@@ -18,21 +22,51 @@ import {
   Input,
   InputGroup,
 } from "reactstrap";
-
+import { Popup } from "reactjs-popup";
 import Header from "components/Headers/Header.js";
-
-
+import axios from "axios";
+import moment, { now } from "moment";
 
 function Index() {
+  const [adminData, setAdminData] = useState({});
+  // const handleYes = () => {
+  //       // Handle "Yes" button click
+  //       // navigate('/redeemed')
+  //   };
 
-  
+  //   const handleNo = () => {
+  //     // Handle "No" button click
+  //     Popup.close();;
+  // };
+
+  useEffect(() => {
+    axios
+      .get("https://cutz-production.up.railway.app/api/v1/admin", {
+        headers: {
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImFkbWluSWQiOiI2NDg1ZWY2Y2JlOTRhODFmMGRkNmFlNDQiLCJpYXQiOjE2ODY0OTkyNDF9.u3E7g9fljtv92TmRgjrZGrQIcxwGDCjgNOTyVINpu-A`,
+        },
+      })
+      .then((r) => {
+        setAdminData(r.data);
+      });
+  }, []);
+
   return (
     <>
       <Header />
 
       <div className="mb-3 p-4 mb-6 admin">
-        <div><h1 className="admin">Admin Manager</h1></div>
-        <div><h5 className="admin">Welcome. <br/>Use caution choose your Admin.  An Admin is your “most trusted” and the person who has access to your entire account<br/> including deleting and modifications.</h5></div>
+        <div>
+          <h1 className="admin">Admin Manager</h1>
+        </div>
+        <div>
+          <h5 className="admin">
+            Welcome. <br />
+            Use caution choose your Admin. An Admin is your “most trusted” and
+            the person who has access to your entire account
+            <br /> including deleting and modifications.
+          </h5>
+        </div>
       </div>
 
       {/* Page content */}
@@ -56,11 +90,9 @@ function Index() {
                         </InputGroup>
                       </FormGroup>
                     </Form>
-
                   </div>
                   <div>
                     <button className="mainbuttons">Add Admin</button>
-
                   </div>
                 </div>
               </CardHeader>
@@ -75,12 +107,12 @@ function Index() {
                     <th scope="col">Last Name</th>
                     <th scope="col">Organization</th>
                     <th scope="col">Email</th>
-                    <th scope="col" >Phone</th>
-                    <th scope="col" >Address</th>
-                    <th scope="col" >Activation</th>
-                    <th scope="col" >Last Seen</th>
-                    <th scope="col" >Status</th>
-                    <th scope="col" >Action</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Activation</th>
+                    <th scope="col">Last Seen</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -98,564 +130,85 @@ function Index() {
                           /> */}
                         {/* </a> */}
                         <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
+                          <span className="mb-0 text-sm">001</span>
                         </Media>
                       </Media>
                     </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
+                    <td>{adminData.firstName}</td>
+                    <td>{adminData.lastName}</td>
+                    <td>{adminData.organization}</td>
                     <td>
                       <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
+                        <span className="mr-2">{adminData.email}</span>
                       </div>
                     </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
+                    <td className="text-right">{adminData.phoneNumber}</td>
+                    <td className="text-right">{adminData.address}</td>
+                    <td className="text-right">{adminData.activeStatus?"Activated":"Deactivated"}</td>
+                    <td className="text-right">{moment(adminData.lastLogin).utc().format("DD/MM/YYYY")}</td>
+                    <td className="text-right">{"Old Account"}</td>
                     <td className="text-right">
                       <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
+                        <div>
+                          <button className="edit mr-2">Edit</button>
+                        </div>
+                        <div>
+                          <Popup
+                            className="popup"
+                            trigger={
+                              <button
+                                className="edit"
+                                type="submit"
+                                position="center"
+                              >
+                                Delete
+                              </button>
+                            }
+                            modal
+                            closeOnDocumentClick
+                            contentStyle={{
+                              maxWidth: "300px",
+                              padding: "20px",
+                              background: "#fff",
+                            }}
+                            overlayStyle={{ background: "rgba(0, 0, 0, 0.7)" }}
+                          >
+                            {(close) => (
+                              <div>
+                                <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                                  Are you sure you want to delete this item
+                                </h2>
+                                {/* <p>Are you sure you want to proceed?</p> */}
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-evenly",
+                                  }}
+                                >
+                                  <button
+                                    className="mainbuttonss "
+                                    onClick={() => {
+                                      // handleNo();
+                                      close();
+                                    }}
+                                  >
+                                    No
+                                  </button>
+                                  <button
+                                    className="mainbuttonss"
+                                    type="submit"
+                                  >
+                                    Yes
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </Popup>
+                        </div>
                       </div>
                     </td>
                   </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        > */}
-                        {/* <img
-                            alt="..."
-                            src={require("../assets/img/theme/team-1-800x800.jpg")}
-                          /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Edit</button></div>
-                        <div><button className="delete">Delete</button></div>
-                      </div>
-                    </td>
-                  </tr>
+                  
                 </tbody>
               </Table>
             </Card>
@@ -665,7 +218,7 @@ function Index() {
                   className="pagination justify-content-end mb-0"
                   listClassName="justify-content-end mb-0"
                 >
-                  <PaginationItem >
+                  <PaginationItem>
                     <PaginationLink
                       href="#pablo"
                       onClick={(e) => e.preventDefault()}
@@ -727,11 +280,9 @@ function Index() {
                             tag="h5"
                             className="text-uppercase text-muted mb-0"
                           >
-                            New <br /> Accounts
+                            New Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            125
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">125</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -741,7 +292,8 @@ function Index() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-success mr-2">
-                          <i className="fa fa-arrow-up" />+02%
+                          <i className="fa fa-arrow-up" />
+                          +02%
                         </span>{" "}
                         <span className="text-nowrap">1 day</span>
                       </p>
@@ -759,9 +311,7 @@ function Index() {
                           >
                             Total Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            5000
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">5000</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -789,9 +339,7 @@ function Index() {
                           >
                             Active Accounts
                           </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">
-                            3000
-                          </span>
+                          <span className="h2 font-weight-bold mb-0">3000</span>
                         </div>
                         <Col className="col-auto">
                           <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -801,7 +349,8 @@ function Index() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-warning mr-2">
-                          <i className="fas fa-arrow-down" />+14%
+                          <i className="fas fa-arrow-down" />
+                          +14%
                         </span>{" "}
                         <span className="text-nowrap">30 days</span>
                       </p>
@@ -829,7 +378,8 @@ function Index() {
                       </Row>
                       <p className="mt-3 mb-0 text-muted text-sm">
                         <span className="text-success mr-2">
-                          <i className="fas fa-arrow-up" />+21%
+                          <i className="fas fa-arrow-up" />
+                          +21%
                         </span>{" "}
                         <span className="text-nowrap">30 days</span>
                       </p>
@@ -841,10 +391,8 @@ function Index() {
           </Container>
         </div>
       </Container>
-
-
     </>
   );
-};
+}
 
 export default Index;

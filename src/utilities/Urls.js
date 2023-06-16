@@ -1,10 +1,14 @@
 export const Urls={
-    BaseUrl:"https://cutz-production.up.railway.app/",
+    // https://event-app-production-production.up.railway.app/api/v1/client/getall
+    // BaseUrl:"https://cutz-production.up.railway.app/",
+    BaseUrl:"https://event-app-production-production.up.railway.app/",
     CLIENT_SIGNUP:'api/v1/client/signup',
     CLIENT_LOGIN:'api/v1/client/login',
     GET_CLIENT:'api/v1/client',
+    GET_CLIENT_ALL:'api/v1/client/getall',
     CLIENT_FORGET_PASSWORD:'api/v1/forgetpasswordclient/resetpass',
     VOLUNTEER_FORGET_PASSWORD:'api/v1/forgetpasswordvolunteer/resetpass',
+    GET_VOLUNTEER_ALL:'api/v1/volunteer/getall',
     VOLUNTEER_LOGIN:"api/v1/volunteer/login",
     VOLUNTEER_SIGNUP:"api/v1/volunteer/signup",
     CHECK_VOLUNTEER_EMAIL:'api/v1/forgetpasswordvolunteer/sendotp',

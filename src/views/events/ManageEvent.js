@@ -41,7 +41,9 @@ function ManageEvent() {
   useEffect(() => {
     getEvent().then((r) => {
       let response = mergeOrg(r.data);
-      setEventList(response);
+      setTimeout(() => {
+        setEventList(response);
+      }, 1000);
     });
   }, []);
 

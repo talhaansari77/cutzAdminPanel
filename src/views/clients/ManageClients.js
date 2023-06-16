@@ -26,12 +26,13 @@ import { Popup } from "reactjs-popup";
 import Header from "components/Headers/Header.js";
 import axios from "axios";
 import { Urls } from "utilities/Urls";
+import { getClients } from "services/client";
+import moment from "moment";
 
 function ManageClients() {
   const [clientList, setClientList] = useState([]);
 
   useEffect(() => {
-    
     // "_id": "641df2c9eb6ff39bda3009db",
     // "firstName": "abc",
     // "lastName": "xyz",
@@ -49,16 +50,10 @@ function ManageClients() {
     // "dateCreated": "2023-03-24T18:58:17.427Z",
     // "lastLogin": "2023-03-24T18:58:17.427Z",
     // "__v": 0
-    axios.get(Urls.BaseUrl+Urls.GET_CLIENT,{headers: {
-        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiYzEyMzQ1NjAwQGdtYWlsLmNvbSIsInVzZXJJZCI6IjY0MWRmMmM5ZWI2ZmYzOWJkYTMwMDlkYiIsImlhdCI6MTY3OTc0NjEzOH0.pmN5L1IxPG8uaM7f6rGT8A54gEwhLRhdNTphix1DX6A",
-      },})
-      .then(function (response) {
-        console.log(response.data);
-        setClientList(response.data)
-      })
-      .catch(function (error) {
-       console.log(error);
-      });
+    // window.location.reload();
+    getClients().then((r) => {
+      setClientList(r.data.slice(0,8));
+    });
   }, []);
 
   return (
@@ -126,188 +121,100 @@ function ManageClients() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">001</span>
+                  {clientList.map((c, index) => (
+                    <tr>
+                      <th scope="row">
+                        <Media className="align-items-center">
+                          <Media>
+                            <span className="mb-0 text-sm">{index + 1}</span>
+                          </Media>
                         </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>asdfsa</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div>
-                          <button className="edit mr-2">Edit</button>
+                      </th>
+                      <td>{c.firstName}</td>
+                      <td>{c.lastName}</td>
+                      <td>{c.familySize}</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">{c.email}</span>
                         </div>
-                        <div>
-                          <Popup
-                            className="popup"
-                            trigger={
-                              <button
-                                className="edit"
-                                type="submit"
-                                position="center"
-                              >
-                                Delete
-                              </button>
-                            }
-                            modal
-                            closeOnDocumentClick
-                            contentStyle={{
-                              maxWidth: "300px",
-                              padding: "20px",
-                              background: "#fff",
-                            }}
-                            overlayStyle={{ background: "rgba(0, 0, 0, 0.7)" }}
-                          >
-                            {(close) => (
-                              <div>
-                                <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
-                                  Are you sure you want to delete this item
-                                </h2>
-                                {/* <p>Are you sure you want to proceed?</p> */}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-evenly",
-                                  }}
+                      </td>
+                      <td className="text-right">{c.phoneNumber}</td>
+                      <td className="text-right">{c.address}</td>
+                      <td className="text-right">
+                        {c.activeStatus ? "Activated" : "InActive"}
+                      </td>
+                      <td className="text-right">
+                        {moment(c.lastLogin).utc().format("DD/MM/YY")}
+                      </td>
+                      <td className="text-right">{"Old Account"}</td>
+                      {/* <td className="text-right">{c.clientStatus?"Client":"Volunteer"}</td> */}
+                      <td className="text-right">
+                        {moment(c.dateCreated).utc().format("DD/MM/YY")}
+                      </td>
+                      <td className="text-right">
+                        <div className="d-flex">
+                          <div>
+                            <button className="edit mr-2">Edit</button>
+                          </div>
+                          <div>
+                            <Popup
+                              className="popup"
+                              trigger={
+                                <button
+                                  className="edit"
+                                  type="submit"
+                                  position="center"
                                 >
-                                  <button
-                                    className="mainbuttonss "
-                                    onClick={() => {
-                                      // handleNo();
-                                      close();
+                                  Delete
+                                </button>
+                              }
+                              modal
+                              closeOnDocumentClick
+                              contentStyle={{
+                                maxWidth: "300px",
+                                padding: "20px",
+                                background: "#fff",
+                              }}
+                              overlayStyle={{
+                                background: "rgba(0, 0, 0, 0.7)",
+                              }}
+                            >
+                              {(close) => (
+                                <div>
+                                  <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                                    Are you sure you want to delete this item
+                                  </h2>
+                                  {/* <p>Are you sure you want to proceed?</p> */}
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-evenly",
                                     }}
                                   >
-                                    No
-                                  </button>
-                                  <button
-                                    className="mainbuttonss"
-                                    type="submit"
-                                  >
-                                    Yes
-                                  </button>
+                                    <button
+                                      className="mainbuttonss "
+                                      onClick={() => {
+                                        // handleNo();
+                                        close();
+                                      }}
+                                    >
+                                      No
+                                    </button>
+                                    <button
+                                      className="mainbuttonss"
+                                      type="submit"
+                                    >
+                                      Yes
+                                    </button>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </Popup>
+                              )}
+                            </Popup>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">001</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>asdfsa</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div>
-                          <button className="edit mr-2">Edit</button>
-                        </div>
-                        <div>
-                          <button className="delete">Delete</button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">001</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>asdfsa</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div>
-                          <button className="edit mr-2">Edit</button>
-                        </div>
-                        <div>
-                          <button className="delete">Delete</button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">001</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>asdfsa</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">03037518445</td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div>
-                          <button className="edit mr-2">Edit</button>
-                        </div>
-                        <div>
-                          <button className="delete">Delete</button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             </Card>

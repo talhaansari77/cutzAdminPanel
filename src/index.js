@@ -11,6 +11,7 @@ import AuthLayout from "layouts/Auth.js";
 import CreateEvent from "views/events/CreateEvent";
 import Notification from "views/Notification";
 import Description from "views/Description";
+import Loginpage from "views/Loginpage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -26,6 +27,7 @@ root.render(
 			<Route path="/Events/createvent" element={<Navigate to="/admin/Events/createvent" replace />} />
 			<Route path="/Events/notification" element={<Navigate to="/admin/Events/notification" replace />} />
 			<Route path="/Events/desription" element={<Navigate to="/admin/Events/desription" replace />} />
+			<Route path="/" element={<Loginpage/>}/>
 		</Routes>
 	</BrowserRouter>
 );

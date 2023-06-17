@@ -26,14 +26,21 @@ import { Popup } from "reactjs-popup";
 import Header from "components/Headers/Header.js";
 import { getVolunteer } from "services/client";
 import moment from "moment";
+import Loader from "utilities/Loaders";
 
 function Volunteers() {
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const [volunteer, setVolunteer] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
     getVolunteer().then((r) => {
       setVolunteer(r.data);
-    });
+      setLoading(false);
+    }).catch(()=>{
+      setLoading(false);
+    })
   }, []);
 
   return (
@@ -66,7 +73,9 @@ function Volunteers() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" />
+                          <Input placeholder="Search" type="text" onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}/>
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -99,6 +108,7 @@ function Volunteers() {
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
+                <Loader loading={loading} />
                 <tbody>
                   {volunteer.map((v, index) => (
                     <tr>

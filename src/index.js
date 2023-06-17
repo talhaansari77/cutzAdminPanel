@@ -12,22 +12,36 @@ import CreateEvent from "views/events/CreateEvent";
 import Notification from "views/Notification";
 import Description from "views/Description";
 import Loginpage from "views/Loginpage";
+import { Provider } from "react-redux";
+import configureStore from "./redux/store";
 
+const store = configureStore();
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-	<BrowserRouter>
-		<Routes>
-			<Route path="/admin/*" element={<AdminLayout />} />
-			<Route path="/auth/*" element={<AuthLayout />} />
-			<Route path="/createvent/*" element={<CreateEvent/>} />
-			<Route path="/notification/*" element={<Notification/>} />
-			<Route path="/desription/*" element={<Description/>} />
-			<Route path="*" element={<Navigate to="/admin/index" replace />} />
-			<Route path="/Events/createvent" element={<Navigate to="/admin/Events/createvent" replace />} />
-			<Route path="/Events/notification" element={<Navigate to="/admin/Events/notification" replace />} />
-			<Route path="/Events/desription" element={<Navigate to="/admin/Events/desription" replace />} />
-			<Route path="/" element={<Loginpage/>}/>
-		</Routes>
-	</BrowserRouter>
+  <Provider store={store}>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin/*" element={<AdminLayout />} />
+        <Route path="/auth/*" element={<AuthLayout />} />
+        <Route path="/createvent/*" element={<CreateEvent />} />
+        <Route path="/notification/*" element={<Notification />} />
+        <Route path="/desription/*" element={<Description />} />
+        <Route path="*" element={<Navigate to="/admin/index" replace />} />
+        <Route
+          path="/Events/createvent"
+          element={<Navigate to="/admin/Events/createvent" replace />}
+        />
+        <Route
+          path="/Events/notification"
+          element={<Navigate to="/admin/Events/notification" replace />}
+        />
+        <Route
+          path="/Events/desription"
+          element={<Navigate to="/admin/Events/desription" replace />}
+        />
+        <Route path="/" element={<Loginpage />} />
+      </Routes>
+    </BrowserRouter>
+  </Provider>
 );

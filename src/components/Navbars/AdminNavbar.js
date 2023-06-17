@@ -17,9 +17,12 @@ import {
 } from "reactstrap";
 import { Popup } from 'reactjs-popup';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const AdminNavbar = (props) => {
-
+  const {user} = useSelector(
+    (state) => state.CreateUserReducer
+  );
   const navigate = useNavigate();
 
     const navigateHome = () => {
@@ -52,7 +55,7 @@ const AdminNavbar = (props) => {
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold" style={{ color: "#666CA3" }}>
-                      Jessica Jones
+                      {user.firstName+" "+ user.lastName}
                     </span>
                   </Media>
                 </Media>

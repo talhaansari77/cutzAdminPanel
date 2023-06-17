@@ -24,8 +24,11 @@ import {
 
 import Header from "../../components/Headers/Header.js";
 import axios from "axios";
+import Loader from "utilities/Loaders";
 
 function ClientsRecord() {
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const [clientList, setClientList] = useState([])
 
   useEffect(() => {
@@ -75,7 +78,9 @@ function ClientsRecord() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" />
+                          <Input placeholder="Search" type="text" onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}/>
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -104,6 +109,7 @@ function ClientsRecord() {
                     <th scope="col">Event ID</th>
                   </tr>
                 </thead>
+                <Loader loading={loading} />
                 <tbody>
                   <tr>
                     <th scope="row">

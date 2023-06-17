@@ -28,32 +28,21 @@ import axios from "axios";
 import { Urls } from "utilities/Urls";
 import { getClients } from "services/client";
 import moment from "moment";
+import Loader from "utilities/Loaders";
 
 function ManageClients() {
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const [clientList, setClientList] = useState([]);
 
   useEffect(() => {
-    // "_id": "641df2c9eb6ff39bda3009db",
-    // "firstName": "abc",
-    // "lastName": "xyz",
-    // "email": "abc12345600@gmail.com",
-    // "phoneNumber": "1244",
-    // "address": "abc",
-    // "familySize": 14,
-    // "password": "12345",
-    // "confirmPassword": "12345",
-    // "activeStatus": true,
-    // "profilePicture": "https://www.shutterstock.com/image-illustration/triangle-solid-black-golden-illustration-260nw-1862937556.jpg",
-    // "clientStatus": true,
-    // "clientAttandance": "none",
-    // "clientExists": false,
-    // "dateCreated": "2023-03-24T18:58:17.427Z",
-    // "lastLogin": "2023-03-24T18:58:17.427Z",
-    // "__v": 0
-    // window.location.reload();
+    setLoading(true);
     getClients().then((r) => {
-      setClientList(r.data.slice(0,8));
-    });
+      setClientList(r.data)
+      setLoading(false);
+    }).catch(()=>{
+      setLoading(false);
+    })
   }, []);
 
   return (
@@ -89,7 +78,9 @@ function ManageClients() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" />
+                          <Input placeholder="Search" type="text" onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}/>
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -120,6 +111,7 @@ function ManageClients() {
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
+                <Loader loading={loading} />
                 <tbody>
                   {clientList.map((c, index) => (
                     <tr>

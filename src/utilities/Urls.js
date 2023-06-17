@@ -6,6 +6,7 @@ export const Urls={
     CLIENT_LOGIN:'api/v1/client/login',
     GET_CLIENT:'api/v1/client',
     GET_CLIENT_ALL:'api/v1/client/getall',
+    GET_ADMIN_ALL:'api/v1/admin/getall',
     CLIENT_FORGET_PASSWORD:'api/v1/forgetpasswordclient/resetpass',
     VOLUNTEER_FORGET_PASSWORD:'api/v1/forgetpasswordvolunteer/resetpass',
     GET_VOLUNTEER_ALL:'api/v1/volunteer/getall',

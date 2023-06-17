@@ -31,20 +31,27 @@ import { Urls } from "utilities/Urls";
 import { getEvent } from "services/Event";
 import { getOrganizationById } from "services/Organization";
 import { delEvent } from "services/Event";
+import Loader from "utilities/Loaders";
 
 function ManageEvent() {
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+
   const [eventList, setEventList] = useState([]);
   const [eventId, setEventId] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     getEvent().then((r) => {
       let response = mergeOrg(r.data);
       setTimeout(() => {
         setEventList(response);
+        setLoading(false);
       }, 1000);
-    });
+    }).catch(()=>{
+      setLoading(false);
+    })
   }, []);
 
   const mergeOrg = (data) => {
@@ -92,7 +99,9 @@ function ManageEvent() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" />
+                          <Input placeholder="Search" type="text" onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}/>
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -124,9 +133,7 @@ function ManageEvent() {
                     <th scope="col">Report</th>
                   </tr>
                 </thead>
-                {loading ? (
-                  <p>loading</p>
-                ) : (
+                <Loader loading={loading} />
                   <tbody>
                     {eventList.map((e, index) => (
                       <tr>
@@ -234,7 +241,7 @@ function ManageEvent() {
                       </tr>
                     ))}
                   </tbody>
-                )}
+                
               </Table>
             </Card>
             <CardFooter className="py-4">

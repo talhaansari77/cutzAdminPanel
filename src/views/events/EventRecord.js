@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import '../../assets/css/argon-dashboard-react.min.css';
 import {
     Card,
@@ -23,9 +23,11 @@ import {
 import Header from "components/Headers/Header.js";
 
 import { useNavigate } from "react-router-dom";
+import Loader from "utilities/Loaders";
 
 function EventRecord() {
-
+    const [search, setSearch] = useState("");
+    const [loading, setLoading] = useState(false);
 
 
 
@@ -62,7 +64,9 @@ function EventRecord() {
                                                             <i className="fas fa-search" />
                                                         </InputGroupText>
                                                     </InputGroupAddon>
-                                                    <Input placeholder="Search" type="text" />
+                                                    <Input placeholder="Search" type="text" onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}/>
                                                 </InputGroup>
                                             </FormGroup>
                                         </Form>
@@ -93,6 +97,7 @@ function EventRecord() {
                                         <th scope="col" ># Total number</th>
                                     </tr>
                                 </thead>
+                                <Loader loading={loading} />
                                 <tbody>
                                     <tr>
                                         <th scope="row">

@@ -27,6 +27,12 @@ import Header from "components/Headers/Header.js";
 import axios from "axios";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Urls } from "utilities/Urls";
+import { delAdmin } from "services/client";
+import Lottie from "react-lottie";
+import loaderAnimation from "assets/Loaders";
+import Loader from "utilities/Loaders";
 
 function Index() {
   const navigate = useNavigate();
@@ -35,7 +41,11 @@ function Index() {
     // 👇️ navigate to /
     navigate("/Events/createvent");
   };
-  const [adminData, setAdminData] = useState({});
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [adminData, setAdminData] = useState([]);
+  const [adminId, setAdminId] = useState("");
+  const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
   //       // Handle "Yes" button click
   //       // navigate('/redeemed')
@@ -47,14 +57,16 @@ function Index() {
   // };
 
   useEffect(() => {
+    setLoading(true);
     axios
-      .get("https://cutz-production.up.railway.app/api/v1/admin", {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImFkbWluSWQiOiI2NDg1ZWY2Y2JlOTRhODFmMGRkNmFlNDQiLCJpYXQiOjE2ODY0OTkyNDF9.u3E7g9fljtv92TmRgjrZGrQIcxwGDCjgNOTyVINpu-A`,
-        },
-      })
+      .get(Urls.BaseUrl + "api/v1/admin/getall")
       .then((r) => {
         setAdminData(r.data);
+        setLoading(false);
+      })
+      .catch((e) => {
+        alert(e);
+        setLoading(false);
       });
   }, []);
 
@@ -93,7 +105,13 @@ function Index() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" />
+                          <Input
+                            placeholder="Search"
+                            type="text"
+                            onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}
+                          />
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -124,103 +142,120 @@ function Index() {
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
+
+                <Loader loading={loading} />
+
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        {/* <a
+                  {adminData.map((a, index) => (
+                    <tr>
+                      <th scope="row">
+                        <Media className="align-items-center">
+                          {/* <a
                           className="avatar rounded-circle mr-3"
                           href="#pablo"
                           onClick={(e) => e.preventDefault()}
                         > */}
-                        {/* <img
+                          {/* <img
                             alt="..."
                             src={require("../assets/img/theme/team-1-800x800.jpg")}
                           /> */}
-                        {/* </a> */}
-                        <Media>
-                          <span className="mb-0 text-sm">001</span>
+                          {/* </a> */}
+                          <Media>
+                            <span className="mb-0 text-sm">{index + 1}</span>
+                          </Media>
                         </Media>
-                      </Media>
-                    </th>
-                    <td>{adminData.firstName}</td>
-                    <td>{adminData.lastName}</td>
-                    <td>{adminData.organization}</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">{adminData.email}</span>
-                      </div>
-                    </td>
-                    <td className="text-right">{adminData.phoneNumber}</td>
-                    <td className="text-right">{adminData.address}</td>
-                    <td className="text-right">
-                      {adminData.activeStatus ? "Activated" : "Deactivated"}
-                    </td>
-                    <td className="text-right">
-                      {moment(adminData.lastLogin).utc().format("DD/MM/YYYY")}
-                    </td>
-                    <td className="text-right">{"Old Account"}</td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div>
-                          <button className="edit mr-2">Edit</button>
+                      </th>
+                      <td>{a.firstName}</td>
+                      <td>{a.lastName}</td>
+                      <td>{a.organization}</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">{a.email}</span>
                         </div>
-                        <div>
-                          <Popup
-                            className="popup"
-                            trigger={
-                              <button
-                                className="edit"
-                                type="submit"
-                                position="center"
-                              >
-                                Delete
-                              </button>
-                            }
-                            modal
-                            closeOnDocumentClick
-                            contentStyle={{
-                              maxWidth: "300px",
-                              padding: "20px",
-                              background: "#fff",
-                            }}
-                            overlayStyle={{ background: "rgba(0, 0, 0, 0.7)" }}
-                          >
-                            {(close) => (
-                              <div>
-                                <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
-                                  Are you sure you want to delete this item
-                                </h2>
-                                {/* <p>Are you sure you want to proceed?</p> */}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-evenly",
-                                  }}
+                      </td>
+                      <td className="text-right">{a.phoneNumber}</td>
+                      <td className="text-right">{a.address}</td>
+                      <td className="text-right">
+                        {a.activeStatus ? "Activated" : "Deactivated"}
+                      </td>
+                      <td className="text-right">
+                        {moment(a.lastLogin).utc().format("DD/MM/YY")}
+                      </td>
+                      <td className="text-right">{"Old Account"}</td>
+                      <td className="text-right">
+                        <div className="d-flex">
+                          <div>
+                            <button className="edit mr-2">Edit</button>
+                          </div>
+                          <div>
+                            <Popup
+                              className="popup"
+                              trigger={
+                                <button
+                                  className="edit"
+                                  type="submit"
+                                  position="center"
+                                  onMouseOver={() => setAdminId(a._id)}
                                 >
-                                  <button
-                                    className="mainbuttonss "
-                                    onClick={() => {
-                                      // handleNo();
-                                      close();
+                                  Delete
+                                </button>
+                              }
+                              modal
+                              closeOnDocumentClick
+                              contentStyle={{
+                                maxWidth: "300px",
+                                padding: "20px",
+                                background: "#fff",
+                              }}
+                              overlayStyle={{
+                                background: "rgba(0, 0, 0, 0.7)",
+                              }}
+                            >
+                              {(close) => (
+                                <div>
+                                  <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                                    Are you sure you want to delete this item
+                                  </h2>
+                                  {/* <p>Are you sure you want to proceed?</p> */}
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-evenly",
                                     }}
                                   >
-                                    No
-                                  </button>
-                                  <button
-                                    className="mainbuttonss"
-                                    type="submit"
-                                  >
-                                    Yes
-                                  </button>
+                                    <button
+                                      className="mainbuttonss "
+                                      onClick={() => {
+                                        // handleNo();
+                                        close();
+                                      }}
+                                    >
+                                      No
+                                    </button>
+                                    <button
+                                      className="mainbuttonss"
+                                      type="submit"
+                                      onClick={() => {
+                                        delAdmin(adminId)
+                                          .then(() => {
+                                            window.location.reload();
+                                          })
+                                          .catch((e) => {
+                                            alert(e);
+                                          });
+                                      }}
+                                    >
+                                      Yes
+                                    </button>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </Popup>
+                              )}
+                            </Popup>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             </Card>

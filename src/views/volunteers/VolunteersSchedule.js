@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import '../../assets/css/argon-dashboard-react.min.css';
 import {
   Card,
@@ -21,10 +21,13 @@ import {
 
 
 import Header from "components/Headers/Header.js";
+import Loader from "utilities/Loaders";
 
 
 
 function VolunteersSchedule() {
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   return (
     <>
@@ -52,7 +55,9 @@ function VolunteersSchedule() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" />
+                          <Input placeholder="Search" type="text" onChange={(e) => {
+                              setSearch(e.target.value);
+                            }}/>
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -86,6 +91,7 @@ function VolunteersSchedule() {
                     <th scope="col" >Action</th>
                   </tr>
                 </thead>
+                <Loader loading={loading} />
                 <tbody>
                   <tr>
                     <th scope="row">

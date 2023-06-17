@@ -8,6 +8,5 @@ export const getEvent = async () => {
 };
 export const delEvent = async (id) => {
  return await axios
-    .delete(`${Urls.BaseUrl}${Urls.GET_EVENTS}/${id}`)
-    
+    .delete(`${Urls.BaseUrl}${Urls.GET_EVENTS}/${id}`)  
 };

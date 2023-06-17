@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import loginpagelogo from "../assets/img/imges/image_2023-01-19_224110357 2.png";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 function Loginpage() {
   const navigate = useNavigate();
@@ -16,6 +17,12 @@ function Loginpage() {
     email: "",
     password: "",
   });
+  const dispatch = useDispatch();
+  const addUser = (data) =>
+    dispatch({
+      type: "CreateUser",
+      payload: data,
+    });
 
   const onSubmit = () => {
     if (!email) {
@@ -24,7 +31,17 @@ function Loginpage() {
       setError({ ...error, email: "invalid password" });
     } else {
       if (email === "innerview34@gmail.com" && password === "12345") {
-        navigateHome();
+        addUser({
+          firstName: "inner",
+          lastName: "view",
+          email: "innerview34@gmail.com",
+          phoneNumber: "0333-33333333",
+          address: "this is admin address",
+          organization: "super",
+        });
+        setTimeout(() => {
+          navigateHome();
+        }, 500);
       }
     }
   };
@@ -52,18 +69,17 @@ function Loginpage() {
             placeholder="email"
             type="Email"
             onChange={(e) => setEmail(e.target.value)}
-            onKeyUp={()=>setError({...error,email:''})}
+            onKeyUp={() => setError({ ...error, email: "" })}
           />
-          <p style={{color:"red"}}>{error.email}</p>
+          <p style={{ color: "red" }}>{error.email}</p>
           <input
             className="d-flex in2"
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
-            onKeyUp={()=>setError({...error,password:''})}
-
+            onKeyUp={() => setError({ ...error, password: "" })}
           />
-          <p style={{color:"red"}}>{error.password}</p>
+          <p style={{ color: "red" }}>{error.password}</p>
           <button className="btn1" onClick={onSubmit}>
             Login
           </button>

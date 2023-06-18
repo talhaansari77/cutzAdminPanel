@@ -32,21 +32,28 @@ import { getEvent } from "services/Event";
 import { getOrganizationById } from "services/Organization";
 import { delEvent } from "services/Event";
 import Loader from "utilities/Loaders";
+import { useSelector } from "react-redux";
 
 function ManageEvent() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
+  const [eventData, setEventData] = useState([]);
   const [eventList, setEventList] = useState([]);
   const [eventId, setEventId] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user } = useSelector((state) => state.CreateUserReducer);
 
   useEffect(() => {
+    if (!user.token) {
+      navigate("/");
+    }
     setLoading(true);
     getEvent().then((r) => {
       let response = mergeOrg(r.data);
       setTimeout(() => {
         setEventList(response);
+        setEventData(response);
         setLoading(false);
       }, 1000);
     }).catch(()=>{
@@ -100,7 +107,14 @@ function ManageEvent() {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input placeholder="Search" type="text" onChange={(e) => {
-                              setSearch(e.target.value);
+                              let s = e.target.value;
+                              let filterData = eventData.filter(
+                                (a) =>
+                                  a.orgName.toLowerCase().includes(s) ||
+                                  a.eventType.toLowerCase().includes(s) ||
+                                  a.addresses[0].house.toLowerCase().includes(s)
+                              );
+                              setEventList(filterData);
                             }}/>
                         </InputGroup>
                       </FormGroup>
@@ -135,7 +149,9 @@ function ManageEvent() {
                 </thead>
                 <Loader loading={loading} />
                   <tbody>
-                    {eventList.map((e, index) => (
+                    {
+                    eventList.length?
+                    eventList.map((e, index) => (
                       <tr>
                         <th scope="row">
                           <Media className="align-items-center">
@@ -239,7 +255,13 @@ function ManageEvent() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                    :
+                  <tr>
+                    <td colSpan={12} align={"center"}>
+                    No Record To Show
+                    </td>
+                  </tr>}
                   </tbody>
                 
               </Table>

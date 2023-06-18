@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import loginpagelogo from "../assets/img/imges/image_2023-01-19_224110357 2.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import axios from "axios";
+import { Urls } from "utilities/Urls";
+import Lottie from "react-lottie";
+import loaderAnimation from "assets/Loaders";
 
 function Loginpage() {
   const navigate = useNavigate();
@@ -11,6 +15,7 @@ function Loginpage() {
     navigate("/admin/index");
   };
 
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({
@@ -23,26 +28,46 @@ function Loginpage() {
       type: "CreateUser",
       payload: data,
     });
-
-  const onSubmit = () => {
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: loaderAnimation,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+  const onSubmit = async () => {
+    let data = { email, password };
     if (!email) {
       setError({ ...error, email: "invalid email" });
     } else if (!password) {
       setError({ ...error, email: "invalid password" });
     } else {
-      if (email === "innerview34@gmail.com" && password === "12345") {
-        addUser({
-          firstName: "inner",
-          lastName: "view",
-          email: "innerview34@gmail.com",
-          phoneNumber: "0333-33333333",
-          address: "this is admin address",
-          organization: "super",
+      setLoading(true);
+      axios
+        .post(Urls.BaseUrl + Urls.ADMIN + "/login", data)
+        .then((r) => {
+          axios
+            .get(Urls.BaseUrl + Urls.ADMIN, {
+              headers: {
+                Authorization: "Bearer " + r.data.token,
+              },
+            })
+            .then((i) => {
+              addUser({ ...i.data, token: r.data.token });
+              setTimeout(() => {
+                navigateHome();
+              }, 500);
+              setLoading(false);
+            })
+            .catch((e) => {
+              setLoading(false);
+            });
+        })
+        .catch((e) => {
+          setLoading(false);
+          alert(e);
         });
-        setTimeout(() => {
-          navigateHome();
-        }, 500);
-      }
     }
   };
 
@@ -81,7 +106,17 @@ function Loginpage() {
           />
           <p style={{ color: "red" }}>{error.password}</p>
           <button className="btn1" onClick={onSubmit}>
-            Login
+            {loading ? (
+              <Lottie
+                style={{}}
+                options={defaultOptions}
+                height={30}
+                width={30}
+                isClickToPauseDisabled
+              />
+            ) : (
+              "Login"
+            )}
           </button>
           <p className="loginpara">FORGOT PASSWORD</p>
         </div>

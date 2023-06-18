@@ -29,16 +29,25 @@ import { Urls } from "utilities/Urls";
 import { getClients } from "services/client";
 import moment from "moment";
 import Loader from "utilities/Loaders";
+import { useSelector } from "react-redux";
+import {  useNavigate } from "react-router-dom";
 
 function ManageClients() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clientData, setClientData] = useState([]);
   const [clientList, setClientList] = useState([]);
+  const { user } = useSelector((state) => state.CreateUserReducer);
 
   useEffect(() => {
+    if (!user.token) {
+      navigate("/");
+    }
     setLoading(true);
     getClients().then((r) => {
       setClientList(r.data)
+      setClientData(r.data)
       setLoading(false);
     }).catch(()=>{
       setLoading(false);
@@ -79,7 +88,14 @@ function ManageClients() {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input placeholder="Search" type="text" onChange={(e) => {
-                              setSearch(e.target.value);
+                              let s = e.target.value;
+                              let filterData = clientData.filter(
+                                (a) =>
+                                  a.firstName.toLowerCase().includes(s) ||
+                                  a.lastName.toLowerCase().includes(s) ||
+                                  a.email.toLowerCase().includes(s)
+                              );
+                              setClientList(filterData);
                             }}/>
                         </InputGroup>
                       </FormGroup>
@@ -113,7 +129,9 @@ function ManageClients() {
                 </thead>
                 <Loader loading={loading} />
                 <tbody>
-                  {clientList.map((c, index) => (
+                  {
+                  clientList.length?
+                  clientList.map((c, index) => (
                     <tr>
                       <th scope="row">
                         <Media className="align-items-center">
@@ -206,7 +224,15 @@ function ManageClients() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  :
+                  <tr>
+                    <td colSpan={12} align={"center"}>
+                    No Record To Show
+                    </td>
+                  </tr>
+                  
+                }
                 </tbody>
               </Table>
             </Card>

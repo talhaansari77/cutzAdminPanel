@@ -17,13 +17,21 @@ import {
 } from "reactstrap";
 import { Popup } from 'reactjs-popup';
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const AdminNavbar = (props) => {
   const {user} = useSelector(
     (state) => state.CreateUserReducer
   );
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+ 
+
+  useEffect(() => {
+  }, [user])
+  
 
     const navigateHome = () => {
         // 👇️ navigate to /
@@ -100,7 +108,12 @@ const AdminNavbar = (props) => {
                                     // handleNo();
                                     // close();
                                 }}>No</button>
-                                  <button className='mainbuttonss' type='submit' >Yes</button>
+                                  <button onClick={()=>{
+                                    alert('a')
+                                    // dispatch({
+                                    //   type: "LOGOUT",
+                                    // });
+                                  }} className='mainbuttonss' type='submit' >Yes</button>
                             </div>
                         </div>
                     )}

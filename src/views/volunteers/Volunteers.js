@@ -27,16 +27,25 @@ import Header from "components/Headers/Header.js";
 import { getVolunteer } from "services/client";
 import moment from "moment";
 import Loader from "utilities/Loaders";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function Volunteers() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [volunteer, setVolunteer] = useState([]);
+  const [volunteerList, setVolunteerList] = useState([]);
+  const [volunteerData, setVolunteerData] = useState([]);
+  const { user } = useSelector((state) => state.CreateUserReducer);
 
   useEffect(() => {
+    if (!user.token) {
+      navigate("/");
+    }
     setLoading(true);
     getVolunteer().then((r) => {
-      setVolunteer(r.data);
+      setVolunteerList(r.data);
+      setVolunteerData(r.data);
       setLoading(false);
     }).catch(()=>{
       setLoading(false);
@@ -74,7 +83,14 @@ function Volunteers() {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input placeholder="Search" type="text" onChange={(e) => {
-                              setSearch(e.target.value);
+                              let s = e.target.value;
+                              let filterData = volunteerData.filter(
+                                (a) =>
+                                  a.firstName.toLowerCase().includes(s) ||
+                                  a.lastName.toLowerCase().includes(s) ||
+                                  a.email.toLowerCase().includes(s)
+                              );
+                              setVolunteerList(filterData);
                             }}/>
                         </InputGroup>
                       </FormGroup>
@@ -110,7 +126,9 @@ function Volunteers() {
                 </thead>
                 <Loader loading={loading} />
                 <tbody>
-                  {volunteer.map((v, index) => (
+                  {
+                  volunteerList.length?
+                  volunteerList.map((v, index) => (
                     <tr>
                       <th scope="row">
                         <Media className="align-items-center">
@@ -203,7 +221,14 @@ function Volunteers() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                  
+                  :
+                  <tr>
+                    <td colSpan={12} align={"center"}>
+                    No Record To Show
+                    </td>
+                  </tr>}
                 </tbody>
               </Table>
             </Card>

@@ -41,9 +41,9 @@ function Index() {
     // 👇️ navigate to /
     navigate("/Events/createvent");
   };
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [adminData, setAdminData] = useState([]);
+  const [adminList, setAdminList] = useState([]);
   const [adminId, setAdminId] = useState("");
   const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
@@ -57,11 +57,15 @@ function Index() {
   // };
 
   useEffect(() => {
+    if (!user.token) {
+      navigate("/");
+    }
     setLoading(true);
     axios
       .get(Urls.BaseUrl + "api/v1/admin/getall")
       .then((r) => {
         setAdminData(r.data);
+        setAdminList(r.data);
         setLoading(false);
       })
       .catch((e) => {
@@ -109,7 +113,14 @@ function Index() {
                             placeholder="Search"
                             type="text"
                             onChange={(e) => {
-                              setSearch(e.target.value);
+                              let s = e.target.value;
+                              let filterData = adminData.filter(
+                                (a) =>
+                                  a.firstName.toLowerCase().includes(s) ||
+                                  a.lastName.toLowerCase().includes(s) ||
+                                  a.email.toLowerCase().includes(s)
+                              );
+                              setAdminList(filterData);
                             }}
                           />
                         </InputGroup>
@@ -146,7 +157,8 @@ function Index() {
                 <Loader loading={loading} />
 
                 <tbody>
-                  {adminData.map((a, index) => (
+                  {adminList.length?
+                  adminList.map((a, index) => (
                     <tr>
                       <th scope="row">
                         <Media className="align-items-center">
@@ -255,7 +267,13 @@ function Index() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )):
+                  <tr>
+                    <td colSpan={11} align={"center"}>
+                    No Record To Show
+                    </td>
+                  </tr>
+                  }
                 </tbody>
               </Table>
             </Card>

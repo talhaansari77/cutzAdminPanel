@@ -35,12 +35,12 @@ const AdminNavbar = (props) => {
 
     const navigateHome = () => {
         // 👇️ navigate to /
-        navigate('/Events/notification');
+        navigate('/admin/notification');
       };
 
       const navigateHomee = () => {
         // 👇️ navigate to /
-        navigate('/Events/desription');
+        navigate('/admin/desription');
       };
 
   return (

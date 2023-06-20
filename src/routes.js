@@ -94,24 +94,6 @@ var routes = [
 				layout: "/admin",
 
 			},
-			{
-				path: "/Events/createvent",
-				// name: "Event Record",
-				component: <CreateEvent />,
-				layout: "/admin",
-			},
-			{
-				path: "/Events/notification",
-				// name: "Event Record",
-				component: <Notification />,
-				layout: "/admin",
-			},
-			{
-				path: "/Events/desription",
-				// name: "Event Record",
-				component: <Description />,
-				layout: "/admin",
-			},
 		],
 	},
 	// {

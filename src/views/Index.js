@@ -39,7 +39,7 @@ function Index() {
 
   const navigateHome = () => {
     // 👇️ navigate to /
-    navigate("/Events/createvent");
+    navigate("/admin/addadmin");
   };
   const [loading, setLoading] = useState(false);
   const [adminData, setAdminData] = useState([]);

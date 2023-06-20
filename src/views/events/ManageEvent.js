@@ -74,7 +74,7 @@ function ManageEvent() {
 
   const navigateHome = () => {
     // 👇️ navigate to /
-    navigate("/Events/createvent");
+    navigate("/admin/createvent");
   };
   return (
     <>

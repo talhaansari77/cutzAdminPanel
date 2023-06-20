@@ -16,6 +16,10 @@ import VolunteersSchedule from "views/volunteers/VolunteersSchedule";
 import VolunteersRecord from "views/volunteers/VolunteersRecord";
 import ManageEvent from "views/events/ManageEvent";
 import EventRecord from "views/events/EventRecord";
+import Addadmin from "views/Addadmin";
+import CreateEvent from "views/events/CreateEvent";
+import Notification from "views/Notification";
+import Description from "views/Description";
 
 const Admin = (props) => {
 	const mainContent = React.useRef(null);
@@ -106,9 +110,18 @@ const Admin = (props) => {
 					{location.pathname === "/admin/Events/eventrecord" && (
 						<EventRecord/>
 					)}
-					{/* {location.pathname === "/admin/Events/createvent" && (
+					{location.pathname === "/admin/addadmin" && (
+						<Addadmin/>
+					)}
+					{location.pathname === "/admin/createvent" && (
 						<CreateEvent/>
-					)} */}
+					)}
+						{location.pathname === "/admin/notification" && (
+						<Notification/>
+					)}
+						{location.pathname === "/admin/desription" && (
+						<Description/>
+					)}
 
 					<AdminFooter />
 				</Container>

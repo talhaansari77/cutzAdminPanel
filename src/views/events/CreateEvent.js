@@ -83,34 +83,28 @@ function CreateEvent() {
                   </h1>
                 </div>
               </CardHeader>
-              <div className="d-flex pb-4 justify-content-around pt-4">
+              <div className="d-flex justify-content-around pt-5">
                 <div className="inputborder">
-                  <select
-                    class="form-select pt-3 inputborder"
-                    style={{ colo: "#666CA3" }}
-                    aria-label="Default select example"
-                  >
-                    <option disabled selected hidden>
-                      Organization
-                    </option>
-                    {orgList.map((o) => (
-                      <option value="1">{o.organizationName}</option>
-                    ))}
-
-                  </select>
-                </div>
-                <div className="inputborder" style={{ marginTop: "23px" }}>
                   <Input
                     className="inputborder"
                     type="text"
-                    placeholder="Event Type"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    placeholder="Organaization"
+                  ></Input>
+                </div>
+                <div className="inputborder">
+                  <Input
+                    className="inputborder"
+                    type="text"
+                    placeholder="Type Event"
                     value={state.eventType}
                     onChange={(e) =>
                       setState({ ...state, eventType: e.target.value })
                     }
                   ></Input>
                 </div>
-                <div>{/* <Input>asdf</Input> */}</div>
+                <div></div>
               </div>
 
               {/* <div className="d-flex justify-content-around pt-5">

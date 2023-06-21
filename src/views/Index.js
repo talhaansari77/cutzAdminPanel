@@ -56,12 +56,12 @@ function Index() {
   //     Popup.close();;
   // };
 
-  useEffect(() => {
+  useEffect(async() => {
     if (!user.token) {
       navigate("/");
     }
     setLoading(true);
-    axios
+  await axios
       .get(Urls.BaseUrl + "api/v1/admin/getall")
       .then((r) => {
         setAdminData(r.data);
@@ -248,7 +248,7 @@ function Index() {
                                       className="mainbuttonss"
                                       type="submit"
                                       onClick={() => {
-                                        delAdmin(adminId)
+                                        delAdmin(adminId,user.token)
                                           .then(() => {
                                             window.location.reload();
                                           })

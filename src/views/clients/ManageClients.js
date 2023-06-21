@@ -30,28 +30,39 @@ import { getClients } from "services/client";
 import moment from "moment";
 import Loader from "utilities/Loaders";
 import { useSelector } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function ManageClients() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [clientId, setClientId] = useState("");
   const [loading, setLoading] = useState(false);
   const [clientData, setClientData] = useState([]);
   const [clientList, setClientList] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
+
+  const delClient = async (id, token) => {
+   return await axios.delete(`${Urls.BaseUrl}api/v1/client/${id}`, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+  };
 
   useEffect(() => {
     if (!user.token) {
       navigate("/");
     }
     setLoading(true);
-    getClients().then((r) => {
-      setClientList(r.data)
-      setClientData(r.data)
-      setLoading(false);
-    }).catch(()=>{
-      setLoading(false);
-    })
+    getClients()
+      .then((r) => {
+        setClientList(r.data);
+        setClientData(r.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -87,7 +98,10 @@ function ManageClients() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" onChange={(e) => {
+                          <Input
+                            placeholder="Search"
+                            type="text"
+                            onChange={(e) => {
                               let s = e.target.value;
                               let filterData = clientData.filter(
                                 (a) =>
@@ -96,7 +110,8 @@ function ManageClients() {
                                   a.email.toLowerCase().includes(s)
                               );
                               setClientList(filterData);
-                            }}/>
+                            }}
+                          />
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -129,110 +144,118 @@ function ManageClients() {
                 </thead>
                 <Loader loading={loading} />
                 <tbody>
-                  {
-                  clientList.length?
-                  clientList.map((c, index) => (
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          <Media>
-                            <span className="mb-0 text-sm">{index + 1}</span>
+                  {clientList.length ? (
+                    clientList.map((c, index) => (
+                      <tr>
+                        <th scope="row">
+                          <Media className="align-items-center">
+                            <Media>
+                              <span className="mb-0 text-sm">{index + 1}</span>
+                            </Media>
                           </Media>
-                        </Media>
-                      </th>
-                      <td>{c.firstName}</td>
-                      <td>{c.lastName}</td>
-                      <td>{c.familySize}</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">{c.email}</span>
-                        </div>
-                      </td>
-                      <td className="text-right">{c.phoneNumber}</td>
-                      <td className="text-right">{c.address}</td>
-                      <td className="text-right">
-                        {c.activeStatus ? "Activated" : "InActive"}
-                      </td>
-                      <td className="text-right">
-                        {moment(c.lastLogin).utc().format("DD/MM/YY")}
-                      </td>
-                      <td className="text-right">{"Old Account"}</td>
-                      {/* <td className="text-right">{c.clientStatus?"Client":"Volunteer"}</td> */}
-                      <td className="text-right">
-                        {moment(c.dateCreated).utc().format("DD/MM/YY")}
-                      </td>
-                      <td className="text-right">
-                        <div className="d-flex">
-                          <div>
-                            <button className="edit mr-2">Edit</button>
+                        </th>
+                        <td>{c.firstName}</td>
+                        <td>{c.lastName}</td>
+                        <td>{c.familySize}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">{c.email}</span>
                           </div>
-                          <div>
-                            <Popup
-                              className="popup"
-                              trigger={
-                                <button
-                                  className="edit"
-                                  type="submit"
-                                  position="center"
-                                >
-                                  Delete
-                                </button>
-                              }
-                              modal
-                              closeOnDocumentClick
-                              contentStyle={{
-                                maxWidth: "300px",
-                                padding: "20px",
-                                background: "#fff",
-                              }}
-                              overlayStyle={{
-                                background: "rgba(0, 0, 0, 0.7)",
-                              }}
-                            >
-                              {(close) => (
-                                <div>
-                                  <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
-                                    Are you sure you want to delete this item
-                                  </h2>
-                                  {/* <p>Are you sure you want to proceed?</p> */}
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-evenly",
-                                    }}
+                        </td>
+                        <td className="text-right">{c.phoneNumber}</td>
+                        <td className="text-right">{c.address}</td>
+                        <td className="text-right">
+                          {c.activeStatus ? "Activated" : "InActive"}
+                        </td>
+                        <td className="text-right">
+                          {moment(c.lastLogin).utc().format("DD/MM/YY")}
+                        </td>
+                        <td className="text-right">{"Old Account"}</td>
+                        {/* <td className="text-right">{c.clientStatus?"Client":"Volunteer"}</td> */}
+                        <td className="text-right">
+                          {moment(c.dateCreated).utc().format("DD/MM/YY")}
+                        </td>
+                        <td className="text-right">
+                          <div className="d-flex">
+                            <div>
+                              <button className="edit mr-2">Edit</button>
+                            </div>
+                            <div>
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setClientId(c._id)}
                                   >
-                                    <button
-                                      className="mainbuttonss "
-                                      onClick={() => {
-                                        // handleNo();
-                                        close();
+                                    Delete
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  maxWidth: "300px",
+                                  padding: "20px",
+                                  background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => (
+                                  <div>
+                                    <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                                      Are you sure you want to delete this item
+                                    </h2>
+                                    {/* <p>Are you sure you want to proceed?</p> */}
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-evenly",
                                       }}
                                     >
-                                      No
-                                    </button>
-                                    <button
-                                      className="mainbuttonss"
-                                      type="submit"
-                                    >
-                                      Yes
-                                    </button>
+                                      <button
+                                        className="mainbuttonss "
+                                        onClick={() => {
+                                          // handleNo();
+                                          close();
+                                        }}
+                                      >
+                                        No
+                                      </button>
+                                      <button
+                                        className="mainbuttonss"
+                                        type="submit"
+                                        onClick={() => {
+                                          delClient(clientId, user.token)
+                                            .then(() => {
+                                              window.location.reload();
+                                            })
+                                            .catch((e) => {
+                                              alert(e);
+                                            });
+                                        }}
+                                      >
+                                        Yes
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                            </Popup>
+                                )}
+                              </Popup>
+                            </div>
                           </div>
-                        </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={12} align={"center"}>
+                        No Record To Show
                       </td>
                     </tr>
-                  ))
-                  :
-                  <tr>
-                    <td colSpan={12} align={"center"}>
-                    No Record To Show
-                    </td>
-                  </tr>
-                  
-                }
+                  )}
                 </tbody>
               </Table>
             </Card>

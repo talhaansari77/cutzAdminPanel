@@ -56,7 +56,7 @@ function ManageEvent() {
         setEventList(response);
         setEventData(response);
         setLoading(false);
-      }, 10000);
+      }, 1000);
     }).catch(()=>{
       setLoading(false);
     })

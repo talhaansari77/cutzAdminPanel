@@ -45,6 +45,7 @@ function Index() {
   const [adminData, setAdminData] = useState([]);
   const [adminList, setAdminList] = useState([]);
   const [adminId, setAdminId] = useState("");
+  const token=localStorage.getItem('token')
   const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
   //       // Handle "Yes" button click
@@ -57,7 +58,7 @@ function Index() {
   // };
 
   useEffect(() => {
-    if (!user.token) {
+    if (!token) {
       navigate("/");
     }
     setLoading(true);

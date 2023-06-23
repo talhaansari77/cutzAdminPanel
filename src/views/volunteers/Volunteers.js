@@ -37,9 +37,10 @@ function Volunteers() {
   const [volunteerList, setVolunteerList] = useState([]);
   const [volunteerData, setVolunteerData] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
+  const token=localStorage.getItem('token')
 
   useEffect(() => {
-    if (!user.token) {
+    if (!token) {
       navigate("/");
     }
     setLoading(true);

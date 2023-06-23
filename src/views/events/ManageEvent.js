@@ -43,9 +43,10 @@ function ManageEvent() {
   const [eventId, setEventId] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.CreateUserReducer);
+  const token=localStorage.getItem('token')
 
   useEffect(() => {
-    if (!user.token) {
+    if (!token) {
       navigate("/");
     }
     setLoading(true);
@@ -55,7 +56,7 @@ function ManageEvent() {
         setEventList(response);
         setEventData(response);
         setLoading(false);
-      }, 1000);
+      }, 10000);
     }).catch(()=>{
       setLoading(false);
     })

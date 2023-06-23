@@ -25,29 +25,61 @@ import {
 import Header from "../../components/Headers/Header.js";
 import axios from "axios";
 import Loader from "utilities/Loaders";
+import { Urls } from "utilities/Urls";
 
 function ClientsRecord() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [clientList, setClientList] = useState([])
+  const [clientList, setClientList] = useState([]);
+  const [clientData, setClientData] = useState([]);
+  const [clientRes, setClientRes] = useState([]);
+  const [clientEvent, setClientEvent] = useState([]);
+  const [clientTime, setClientTime] = useState([]);
+
+  const getClientRes = async () => {
+    // setLoading(true)
+    await axios
+      .get(Urls.BaseUrl + Urls.EVENTS_RESERVATION_CLIENT + "/getall")
+      .then((r) => {
+        setClientRes(r.data);
+        // setClientData(r.data);
+        // setClientList(r.data);
+        // setLoading(false)
+      })
+      .catch((e) => {
+        // setLoading(false)
+        alert(e);
+      });
+  };
+  const mergeClientData = async (data) => {
+    let newData = [];
+    data.map(async (i) => {
+      await axios
+        .get(`${Urls.BaseUrl}${Urls.GET_CLIENT}/${i.clientID}`, {
+          headers: {
+            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImFkbWluSWQiOiI2NDg1ZWY2Y2JlOTRhODFmMGRkNmFlNDQiLCJpYXQiOjE2ODY0OTkyNDF9.u3E7g9fljtv92TmRgjrZGrQIcxwGDCjgNOTyVINpu-A",
+          },
+          
+        })
+        .then((r) => { 
+          newData.push({ ...i, client: r.data });
+        })
+      });
+      console.log(newData)
+      console.log(newData.length)
+      console.log(JSON.stringify(newData))
+  };
 
   useEffect(() => {
-
-    const options = {
-      method: "GET",
-      url: "https://cutz-production.up.railway.app/api/v1/event",
-    };
-
-    axios
-      .request(options)
-      .then(function (response) {
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-
+    getClientRes();
   }, []);
+
+  useEffect(() => {
+    if (clientRes.length) {
+      mergeClientData(clientRes);
+    }
+  }, [clientRes]);
+
   return (
     <>
       <Header />
@@ -78,9 +110,13 @@ function ClientsRecord() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" onChange={(e) => {
+                          <Input
+                            placeholder="Search"
+                            type="text"
+                            onChange={(e) => {
                               setSearch(e.target.value);
-                            }}/>
+                            }}
+                          />
                         </InputGroup>
                       </FormGroup>
                     </Form>
@@ -111,90 +147,44 @@ function ClientsRecord() {
                 </thead>
                 <Loader loading={loading} />
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">001</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>joe</td>
-                    <td>David</td>
-                    <td>6</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">FIMA</span>
-                      </div>
-                    </td>
-                    <td className="text-right">Food Distribution</td>
-                    <td className="text-right">26255 Schoolcraft St</td>
-                    <td className="text-right">2/12/2023 1:00 PM</td>
-                    <td className="text-right">Present</td>
-                    <td className="text-right">0001</td>
-                    {/* <td className="text-right"> */}
-                    {/* <div className="d-flex"> */}
-                    {/* <div><button className="edit mr-2">Edit</button></div> */}
-                    {/* <div><button className="delete">Cancel</button></div> */}
-                    {/* </div> */}
-                    {/* </td> */}
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">002</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>joe</td>
-                    <td>David</td>
-                    <td>6</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">FIMA</span>
-                      </div>
-                    </td>
-                    <td className="text-right">Food Distribution</td>
-                    <td className="text-right">26255 Schoolcraft St</td>
-                    <td className="text-right">2/12/2023 1:00 PM</td>
-                    <td className="text-right">Present</td>
-                    <td className="text-right">0003</td>
-                    {/* <td className="text-right"> */}
-                    {/* <div className="d-flex"> */}
-                    {/* <div><button className="edit mr-2">Edit</button></div> */}
-                    {/* <div><button className="delete">Cancel</button></div> */}
-                    {/* </div> */}
-                    {/* </td> */}
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">003</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>joe</td>
-                    <td>David</td>
-                    <td>6</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">FIMA</span>
-                      </div>
-                    </td>
-                    <td className="text-right">Food Distribution</td>
-                    <td className="text-right">26255 Schoolcraft St</td>
-                    <td className="text-right">2/12/2023 1:00 PM</td>
-                    <td className="text-right">Present</td>
-                    <td className="text-right">0003</td>
-                    {/* <td className="text-right"> */}
-                    {/* <div className="d-flex"> */}
-                    {/* <div><button className="edit mr-2">Edit</button></div> */}
-                    {/* <div><button className="delete">Cancel</button></div> */}
-                    {/* </div> */}
-                    {/* </td> */}
-                  </tr>
+                  {clientList.length ? (
+                    clientList.map((c, index) => (
+                      <tr>
+                        <th scope="row">
+                          <Media className="align-items-center">
+                            <Media>
+                              <span className="mb-0 text-sm">{index + 1}</span>
+                            </Media>
+                          </Media>
+                        </th>
+                        <td>joe</td>
+                        <td>David</td>
+                        <td>6</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">FIMA</span>
+                          </div>
+                        </td>
+                        <td className="text-right">Food Distribution</td>
+                        <td className="text-right">26255 Schoolcraft St</td>
+                        <td className="text-right">2/12/2023 1:00 PM</td>
+                        <td className="text-right">Present</td>
+                        <td className="text-right">0001</td>
+                        {/* <td className="text-right"> */}
+                        {/* <div className="d-flex"> */}
+                        {/* <div><button className="edit mr-2">Edit</button></div> */}
+                        {/* <div><button className="delete">Cancel</button></div> */}
+                        {/* </div> */}
+                        {/* </td> */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={12} align={"center"}>
+                        No Record To Show
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
             </Card>

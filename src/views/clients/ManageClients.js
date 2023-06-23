@@ -39,9 +39,10 @@ function ManageClients() {
   const [clientData, setClientData] = useState([]);
   const [clientList, setClientList] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
+  const token=localStorage.getItem('token')
 
   useEffect(() => {
-    if (!user.token) {
+    if (!token) {
       navigate("/");
     }
     setLoading(true);

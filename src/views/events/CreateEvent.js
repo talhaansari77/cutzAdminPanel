@@ -5,10 +5,33 @@ import { Card, Container, Row, CardHeader, Input } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import { createOrganization } from "services/Organization";
 import { getOrganizations } from "services/Organization";
-
+import { createEvent } from "services/Event";
+import loaderAnimation from "assets/Loaders";
+import Lottie from "react-lottie";
+import axios from "axios";
+import { Urls } from "utilities/Urls";
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: loaderAnimation,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 function CreateEvent() {
+  const [loading, setLoading] = useState(false);
   const [orgList, setOrgList] = useState([]);
   const [orgName, setOrgName] = useState("");
+  const [timings, setTimings] = useState({
+    eventId: "",
+    priorEventStartTime: "",
+    priorEventEndTime: "",
+    eventStartTime: "",
+    eventEndTime: "",
+    afterEventStartTime: "",
+    afterEventEndTime: "",
+    capacity: 100,
+  });
   const [state, setState] = useState({
     location: {
       latitude: 37.78825,
@@ -16,7 +39,7 @@ function CreateEvent() {
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     },
-    orgId: "6433e77f91f9a8f3766ee760",
+    orgId: "",
     event_id: 23,
     eventType: "",
     addresses: [
@@ -50,6 +73,51 @@ function CreateEvent() {
     volunteerCapacity: 20,
     eventCode: "1234",
   });
+
+  const createTiming = async (id) => {
+    await axios
+      .post(Urls.BaseUrl + "api/v1/timing", {
+        ...timings,
+        eventId: id,
+      })
+      .then((r) => {
+        setLoading(false);
+        alert("Event added successfully");
+      })
+      .catch((e) => {
+        alert(e);
+        setLoading(false);
+      });
+  };
+
+  const addEvent = (data) => {
+    createEvent(data)
+      .then((r) => {
+        createTiming(r.data.id);
+      })
+      .catch((e) => {
+        alert(e);
+        setLoading(false);
+      });
+  };
+
+  const onSubmit = () => {
+    setLoading(true);
+    const res = orgList.find(
+      (o) => o.organizationName.toLowerCase() === orgName.toLowerCase()
+    );
+    if (res) {
+      // res.organizationName
+      addEvent({ ...state, orgId: res._id });
+    } else {
+      createOrganization({ organizationName: orgName }).then((r)=>{
+        addEvent({ ...state, orgId: r.data.id });
+      }).catch((e) => {
+        alert(e);
+        setLoading(false);
+      });
+    }
+  };
 
   useEffect(() => {
     getOrganizations().then((r) => {
@@ -197,9 +265,12 @@ function CreateEvent() {
                     className="inputborder"
                     type="date"
                     placeholder="Enter a date"
-                    value={state.eventType}
+                    value={timings.priorEventStartTime}
                     onChange={(e) =>
-                      setState({ ...state, eventType: e.target.value })
+                      setTimings({
+                        ...timings,
+                        priorEventStartTime: e.target.value,
+                      })
                     }
                   ></Input>
                 </div>
@@ -209,6 +280,13 @@ function CreateEvent() {
                     className="inputborder"
                     type="date"
                     placeholder="Type Event"
+                    value={timings.priorEventEndTime}
+                    onChange={(e) =>
+                      setTimings({
+                        ...timings,
+                        priorEventEndTime: e.target.value,
+                      })
+                    }
                   ></Input>
                 </div>
                 <div>{/* <Input>asdf</Input> */}</div>
@@ -220,6 +298,10 @@ function CreateEvent() {
                     className="inputborder"
                     type="date"
                     placeholder="Enter a date"
+                    value={timings.eventStartTime}
+                    onChange={(e) =>
+                      setTimings({ ...timings, eventStartTime: e.target.value })
+                    }
                   ></Input>
                 </div>
                 <div className="inputborder">
@@ -228,6 +310,10 @@ function CreateEvent() {
                     className="inputborder"
                     type="date"
                     placeholder="Type Event"
+                    value={timings.eventEndTime}
+                    onChange={(e) =>
+                      setTimings({ ...timings, eventEndTime: e.target.value })
+                    }
                   ></Input>
                 </div>
                 <div>{/* <Input>asdf</Input> */}</div>
@@ -240,6 +326,13 @@ function CreateEvent() {
                     className="inputborder"
                     type="date"
                     placeholder="Enter a date"
+                    value={timings.afterEventStartTime}
+                    onChange={(e) =>
+                      setTimings({
+                        ...timings,
+                        afterEventStartTime: e.target.value,
+                      })
+                    }
                   ></Input>
                 </div>
                 <div className="inputborder">
@@ -248,6 +341,13 @@ function CreateEvent() {
                     className="inputborder"
                     type="date"
                     placeholder="Type Event"
+                    value={timings.afterEventEndTime}
+                    onChange={(e) =>
+                      setTimings({
+                        ...timings,
+                        afterEventEndTime: e.target.value,
+                      })
+                    }
                   ></Input>
                 </div>
                 <div>{/* <Input>asdf</Input> */}</div>
@@ -256,8 +356,12 @@ function CreateEvent() {
                 <div className="inputborder" style={{ marginTop: "23px" }}>
                   <Input
                     className="inputborder"
-                    type="text"
+                    type="number"
                     placeholder="Event Capacity"
+                    value={state.eventCapacity}
+                    onChange={(e) =>
+                      setState({ ...state, eventCapacity: e.target.value })
+                    }
                   ></Input>
                 </div>
                 <div className="inputborder">
@@ -265,28 +369,36 @@ function CreateEvent() {
                     class="form-select pt-3 inputborder"
                     style={{ colo: "#666CA3" }}
                     aria-label="Default select example"
+                    onChange={(e) =>
+                      setState({ ...state, groupServicePeriod: e.target.value })
+                    }
                   >
-                    <option selected>Group service period</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option selected hidden disabled>
+                      Group service period
+                    </option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
                   </select>
                 </div>
                 <div>{/* <Input>asdf</Input> */}</div>
               </div>
 
               <div className="addevents">
-                <button
-                  className="mainbuttons"
-                  onClick={() => {
-                    createOrganization({ organizationName: orgName }).then(() =>
-                      alert("yes")
-                    );
-                    console.log(state);
-                  }}
-                >
+                <button className="mainbuttons" onClick={onSubmit}>
                   Add Event
                 </button>
+                {loading ? (
+                  <Lottie
+                    style={{}}
+                    options={defaultOptions}
+                    height={30}
+                    width={30}
+                    isClickToPauseDisabled
+                  />
+                ) : (
+                  <></>
+                )}
               </div>
             </Card>
           </div>

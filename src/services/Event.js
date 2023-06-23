@@ -6,6 +6,10 @@ export const getEvent = async () => {
     .get(Urls.BaseUrl + Urls.GET_EVENTS)
     
 };
+export const createEvent = async (data) => {
+ return await axios
+    .post(`${Urls.BaseUrl}${Urls.GET_EVENTS}`,data)  
+};
 export const delEvent = async (id) => {
  return await axios
     .delete(`${Urls.BaseUrl}${Urls.GET_EVENTS}/${id}`)  

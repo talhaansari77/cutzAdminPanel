@@ -48,13 +48,16 @@ function Loginpage() {
         .post(Urls.BaseUrl + Urls.ADMIN + "/login", data)
         .then((r) => {
           axios
-            .get(Urls.BaseUrl + Urls.ADMIN, {
-              headers: {
-                Authorization: "Bearer " + r.data.token,
-              },
-            })
-            .then((i) => {
-              addUser({ ...i.data, token: r.data.token });
+          .get(Urls.BaseUrl + Urls.ADMIN+"/"+r.data.id, {
+            headers: {
+              Authorization: "Bearer " + r.data.token,
+            },
+          })
+          .then((i) => {
+            // addUser({ ...i.data, token: r.data.token });
+              localStorage.setItem("token",r.data.token)
+              localStorage.setItem("firstName",i.data.firstName)
+              localStorage.setItem("lastName",i.data.lastName)
               setTimeout(() => {
                 navigateHome();
               }, 500);

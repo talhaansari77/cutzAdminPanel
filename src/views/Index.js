@@ -33,6 +33,7 @@ import { delAdmin } from "services/client";
 import Lottie from "react-lottie";
 import loaderAnimation from "assets/Loaders";
 import Loader from "utilities/Loaders";
+import { ResultCounter } from "components/ResultCounter";
 
 function Index() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ function Index() {
   const [adminData, setAdminData] = useState([]);
   const [adminList, setAdminList] = useState([]);
   const [adminId, setAdminId] = useState("");
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem("token");
   const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
   //       // Handle "Yes" button click
@@ -125,6 +126,7 @@ function Index() {
                             }}
                           />
                         </InputGroup>
+                        <ResultCounter list={adminList} />
                       </FormGroup>
                     </Form>
                   </div>
@@ -158,123 +160,124 @@ function Index() {
                 <Loader loading={loading} />
 
                 <tbody>
-                  {adminList.length?
-                  adminList.map((a, index) => (
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          {/* <a
+                  {adminList.length ? (
+                    adminList.map((a, index) => (
+                      <tr>
+                        <th scope="row">
+                          <Media className="align-items-center">
+                            {/* <a
                           className="avatar rounded-circle mr-3"
                           href="#pablo"
                           onClick={(e) => e.preventDefault()}
                         > */}
-                          {/* <img
+                            {/* <img
                             alt="..."
                             src={require("../assets/img/theme/team-1-800x800.jpg")}
                           /> */}
-                          {/* </a> */}
-                          <Media>
-                            <span className="mb-0 text-sm">{index + 1}</span>
+                            {/* </a> */}
+                            <Media>
+                              <span className="mb-0 text-sm">{index + 1}</span>
+                            </Media>
                           </Media>
-                        </Media>
-                      </th>
-                      <td>{a.firstName}</td>
-                      <td>{a.lastName}</td>
-                      <td>{a.organization}</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">{a.email}</span>
-                        </div>
-                      </td>
-                      <td className="text-right">{a.phoneNumber}</td>
-                      <td className="text-right">{a.address}</td>
-                      <td className="text-right">
-                        {a.activeStatus ? "Activated" : "Deactivated"}
-                      </td>
-                      <td className="text-right">
-                        {moment(a.lastLogin).utc().format("DD/MM/YY")}
-                      </td>
-                      <td className="text-right">{"Old Account"}</td>
-                      <td className="text-right">
-                        <div className="d-flex">
-                          <div>
-                            <button className="edit mr-2">Edit</button>
+                        </th>
+                        <td>{a.firstName}</td>
+                        <td>{a.lastName}</td>
+                        <td>{a.organization}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">{a.email}</span>
                           </div>
-                          <div>
-                            <Popup
-                              className="popup"
-                              trigger={
-                                <button
-                                  className="edit"
-                                  type="submit"
-                                  position="center"
-                                  onMouseOver={() => setAdminId(a._id)}
-                                >
-                                  Delete
-                                </button>
-                              }
-                              modal
-                              closeOnDocumentClick
-                              contentStyle={{
-                                maxWidth: "300px",
-                                padding: "20px",
-                                background: "#fff",
-                              }}
-                              overlayStyle={{
-                                background: "rgba(0, 0, 0, 0.7)",
-                              }}
-                            >
-                              {(close) => (
-                                <div>
-                                  <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
-                                    Are you sure you want to delete this item
-                                  </h2>
-                                  {/* <p>Are you sure you want to proceed?</p> */}
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-evenly",
-                                    }}
+                        </td>
+                        <td className="text-right">{a.phoneNumber}</td>
+                        <td className="text-right">{a.address}</td>
+                        <td className="text-right">
+                          {a.activeStatus ? "Activated" : "Deactivated"}
+                        </td>
+                        <td className="text-right">
+                          {moment(a.lastLogin).utc().format("DD/MM/YY")}
+                        </td>
+                        <td className="text-right">{"Old Account"}</td>
+                        <td className="text-right">
+                          <div className="d-flex">
+                            <div>
+                              <button className="edit mr-2">Edit</button>
+                            </div>
+                            <div>
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setAdminId(a._id)}
                                   >
-                                    <button
-                                      className="mainbuttonss "
-                                      onClick={() => {
-                                        // handleNo();
-                                        close();
+                                    Delete
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  maxWidth: "300px",
+                                  padding: "20px",
+                                  background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => (
+                                  <div>
+                                    <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                                      Are you sure you want to delete this item
+                                    </h2>
+                                    {/* <p>Are you sure you want to proceed?</p> */}
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-evenly",
                                       }}
                                     >
-                                      No
-                                    </button>
-                                    <button
-                                      className="mainbuttonss"
-                                      type="submit"
-                                      onClick={() => {
-                                        delAdmin(adminId)
-                                          .then(() => {
-                                            window.location.reload();
-                                          })
-                                          .catch((e) => {
-                                            alert(e);
-                                          });
-                                      }}
-                                    >
-                                      Yes
-                                    </button>
+                                      <button
+                                        className="mainbuttonss "
+                                        onClick={() => {
+                                          // handleNo();
+                                          close();
+                                        }}
+                                      >
+                                        No
+                                      </button>
+                                      <button
+                                        className="mainbuttonss"
+                                        type="submit"
+                                        onClick={() => {
+                                          delAdmin(adminId)
+                                            .then(() => {
+                                              window.location.reload();
+                                            })
+                                            .catch((e) => {
+                                              alert(e);
+                                            });
+                                        }}
+                                      >
+                                        Yes
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                            </Popup>
+                                )}
+                              </Popup>
+                            </div>
                           </div>
-                        </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={11} align={"center"}>
+                        No Record To Show
                       </td>
                     </tr>
-                  )):
-                  <tr>
-                    <td colSpan={11} align={"center"}>
-                    No Record To Show
-                    </td>
-                  </tr>
-                  }
+                  )}
                 </tbody>
               </Table>
             </Card>

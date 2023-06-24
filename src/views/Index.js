@@ -251,7 +251,8 @@ function Index() {
                                         className="mainbuttonss"
                                         type="submit"
                                         onClick={() => {
-                                          delAdmin(adminId)
+                                          close();
+                                          delAdmin(adminId,localStorage.getItem("token"))
                                             .then(() => {
                                               window.location.reload();
                                             })

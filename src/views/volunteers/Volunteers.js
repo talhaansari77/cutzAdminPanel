@@ -29,11 +29,14 @@ import moment from "moment";
 import Loader from "utilities/Loaders";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { delVolunteer } from "services/client";
+import { ResultCounter } from "components/ResultCounter";
 
 function Volunteers() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [volunteerId, setVolunteerId] = useState('');
   const [volunteerList, setVolunteerList] = useState([]);
   const [volunteerData, setVolunteerData] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
@@ -94,6 +97,7 @@ function Volunteers() {
                               setVolunteerList(filterData);
                             }}/>
                         </InputGroup>
+                        <ResultCounter list={volunteerList}/>
                       </FormGroup>
                     </Form>
                   </div>
@@ -121,7 +125,6 @@ function Volunteers() {
                     <th scope="col">Last Seen</th>
                     <th scope="col">Status</th>
                     <th scope="col">Joined Date</th>
-                    <th scope="col">Joined Date</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -130,6 +133,23 @@ function Volunteers() {
                   {
                   volunteerList.length?
                   volunteerList.map((v, index) => (
+        //             "profilePicture": "",
+        // "_id": "6419f10ecf856ac5a3cf948f",
+        // "firstName": "abc",
+        // "lastName": "xyz",
+        // "email": "xyz@gmail.com",
+        // "phoneNumber": "03351128815",
+        // "address": "abc",
+        // "employer": "xyz",
+        // "organization": "xyz",
+        // "password": "$2b$10$2SKH59/saI7rW0/PKL5kT.JzsnO2EfSlG1PTrgks2DK/cO/NwV16C",
+        // "activeStatus": true,
+        // "volunteerStatus": true,
+        // "volunteerAttandance": "none",
+        // "volunteerExists": true,
+        // "dateCreated": "2023-03-21T18:01:50.611Z",
+        // "lastLogin": "2023-03-21T18:01:50.612Z",
+        // "__v": 0
                     <tr>
                       <th scope="row">
                         <Media className="align-items-center">
@@ -140,26 +160,27 @@ function Volunteers() {
                       </th>
                       <td>{v.firstName}</td>
                       <td>{v.lastName}</td>
-                      <td>{v.familySize}</td>
+                      <td>{v.organization}</td>
                       <td>
                         <div className="d-flex align-items-center">
-                          <span className="mr-2">{v.email}</span>
+                          <span className="mr-2">{v.employer}</span>
                         </div>
                       </td>
-                      <td className="text-right">{v.phoneNumber}</td>
-                      <td className="text-right">{v.address}</td>
-                      <td className="text-right">
+                      <td className="text-left">{v.email}</td>
+                      <td className="text-left">{v.phoneNumber}</td>
+                      <td className="text-left">{v.address}</td>
+                      <td className="text-left">
                         {v.activeStatus ? "Activated" : "InActive"}
                       </td>
-                      <td className="text-right">
+                      <td className="text-left">
                         {moment(v.lastLogin).utc().format("DD/MM/YY")}
                       </td>
-                      <td className="text-right">{"Old Account"}</td>
+                      <td className="text-left">{"Old Account"}</td>
                       {/* <td className="text-right">{c.clientStatus?"Client":"Volunteer"}</td> */}
-                      <td className="text-right">
+                      <td className="text-left">
                         {moment(v.dateCreated).utc().format("DD/MM/YY")}
                       </td>
-                      <td className="text-right">
+                      <td className="text-left">
                         <div className="d-flex">
                           <div>
                             <button className="edit mr-2">Edit</button>
@@ -172,6 +193,7 @@ function Volunteers() {
                                   className="edit"
                                   type="submit"
                                   position="center"
+                                  onMouseOver={() => setVolunteerId(v._id)}
                                 >
                                   Delete
                                 </button>
@@ -211,6 +233,16 @@ function Volunteers() {
                                     <button
                                       className="mainbuttonss"
                                       type="submit"
+                                      onClick={() => {
+                                        close();
+                                        delVolunteer(volunteerId,localStorage.getItem("token"))
+                                          .then(() => {
+                                            window.location.reload();
+                                          })
+                                          .catch((e) => {
+                                            alert(e);
+                                          });
+                                      }}
                                     >
                                       Yes
                                     </button>

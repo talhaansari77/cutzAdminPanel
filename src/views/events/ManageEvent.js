@@ -33,6 +33,7 @@ import { getOrganizationById } from "services/Organization";
 import { delEvent } from "services/Event";
 import Loader from "utilities/Loaders";
 import { useSelector } from "react-redux";
+import { ResultCounter } from "components/ResultCounter";
 
 function ManageEvent() {
   const navigate = useNavigate();
@@ -118,6 +119,7 @@ function ManageEvent() {
                               setEventList(filterData);
                             }}/>
                         </InputGroup>
+                        <ResultCounter list={eventList}/>
                       </FormGroup>
                     </Form>
                   </div>
@@ -171,12 +173,12 @@ function ManageEvent() {
                             </span>
                           </div>
                         </td>
-                        <td className="text-right">{e.orgName}</td>
-                        <td className="text-right">{e.eventType}</td>
-                        <td className="text-right">{e.addresses[0].house}</td>
-                        <td className="text-right">2/10/2023 11:00 AM</td>
-                        <td className="text-right">2/10/2023 11:00 pm</td>
-                        <td className="text-right">
+                        <td className="text-left">{e.orgName}</td>
+                        <td className="text-left">{e.eventType}</td>
+                        <td className="text-left">{e.addresses[0].house}</td>
+                        <td className="text-left">2/10/2023 11:00 AM</td>
+                        <td className="text-left">2/10/2023 11:00 pm</td>
+                        <td className="text-left">
                           <div className="d-flex">
                             <div>
                               <button className="edit mr-2">Edit</button>
@@ -230,9 +232,10 @@ function ManageEvent() {
                                         className="mainbuttonss"
                                         type="submit"
                                         onClick={() => {
+                                          close();
                                           delEvent(eventId).then(() => {
                                             window.location.reload()
-                                          });
+                                          }).catch((e)=>{alert(e)})
                                         }}
                                       >
                                         Yes

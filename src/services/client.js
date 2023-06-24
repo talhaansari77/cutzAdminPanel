@@ -19,7 +19,27 @@ export const getVolunteer = async () => {
     return await axios.get(`${Urls.BaseUrl}${Urls.GET_VOLUNTEER_ALL}`);
   } catch (error) {}
 };
-export const delAdmin = async (id) => {
+export const delAdmin = async (id,token) => {
   return await axios
-     .delete(`${Urls.BaseUrl}api/v1/admin/${id}`)  
+     .delete(`${Urls.BaseUrl}api/v1/admin/${id}`,{
+      headers:{
+        Authorization:"Bearer "+token
+      }
+     })  
+ };
+export const delClient = async (id,token) => {
+  return await axios
+     .delete(`${Urls.BaseUrl}api/v1/client/${id}`,{
+      headers:{
+        Authorization:"Bearer "+token
+      }
+     })  
+ };
+export const delVolunteer = async (id,token) => {
+  return await axios
+     .delete(`${Urls.BaseUrl}api/v1/volunteer/${id}`,{
+      headers:{
+        Authorization:"Bearer "+token
+      }
+     })  
  };

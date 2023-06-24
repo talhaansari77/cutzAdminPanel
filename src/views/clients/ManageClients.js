@@ -31,11 +31,14 @@ import moment from "moment";
 import Loader from "utilities/Loaders";
 import { useSelector } from "react-redux";
 import {  useNavigate } from "react-router-dom";
+import { delClient } from "services/client";
+import { ResultCounter } from "components/ResultCounter";
 
 function ManageClients() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clientId, setClientId] = useState('');
   const [clientData, setClientData] = useState([]);
   const [clientList, setClientList] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
@@ -99,6 +102,7 @@ function ManageClients() {
                               setClientList(filterData);
                             }}/>
                         </InputGroup>
+                        <ResultCounter list={clientList} />
                       </FormGroup>
                     </Form>
                   </div>
@@ -143,26 +147,26 @@ function ManageClients() {
                       </th>
                       <td>{c.firstName}</td>
                       <td>{c.lastName}</td>
-                      <td>{c.familySize}</td>
+                      <td className="text-center">{c.familySize}</td>
                       <td>
                         <div className="d-flex align-items-center">
                           <span className="mr-2">{c.email}</span>
                         </div>
                       </td>
-                      <td className="text-right">{c.phoneNumber}</td>
-                      <td className="text-right">{c.address}</td>
-                      <td className="text-right">
+                      <td className="text-left">{c.phoneNumber}</td>
+                      <td className="text-left">{c.address}</td>
+                      <td className="text-left">
                         {c.activeStatus ? "Activated" : "InActive"}
                       </td>
-                      <td className="text-right">
+                      <td className="text-left">
                         {moment(c.lastLogin).utc().format("DD/MM/YY")}
                       </td>
-                      <td className="text-right">{"Old Account"}</td>
+                      <td className="text-left">{"Old Account"}</td>
                       {/* <td className="text-right">{c.clientStatus?"Client":"Volunteer"}</td> */}
-                      <td className="text-right">
+                      <td className="text-left">
                         {moment(c.dateCreated).utc().format("DD/MM/YY")}
                       </td>
-                      <td className="text-right">
+                      <td className="text-left">
                         <div className="d-flex">
                           <div>
                             <button className="edit mr-2">Edit</button>
@@ -175,6 +179,7 @@ function ManageClients() {
                                   className="edit"
                                   type="submit"
                                   position="center"
+                                  onMouseOver={() => setClientId(c._id)}
                                 >
                                   Delete
                                 </button>
@@ -214,6 +219,16 @@ function ManageClients() {
                                     <button
                                       className="mainbuttonss"
                                       type="submit"
+                                      onClick={() => {
+                                        close();
+                                        delClient(clientId,localStorage.getItem("token"))
+                                          .then(() => {
+                                            window.location.reload();
+                                          })
+                                          .catch((e) => {
+                                            alert(e);
+                                          });
+                                      }}
                                     >
                                       Yes
                                     </button>

@@ -33,12 +33,14 @@ import { useSelector } from "react-redux";
 import {  useNavigate } from "react-router-dom";
 import { delClient } from "services/client";
 import { ResultCounter } from "components/ResultCounter";
+import ClientEdit from "components/ClientEdit";
 
 function ManageClients() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [clientId, setClientId] = useState('');
+  const [client, setClient] = useState({});
   const [clientData, setClientData] = useState([]);
   const [clientList, setClientList] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
@@ -168,9 +170,35 @@ function ManageClients() {
                       </td>
                       <td className="text-left">
                         <div className="d-flex">
-                          <div>
-                            <button className="edit mr-2">Edit</button>
-                          </div>
+                        <div className="mr-2">
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setClient(c)}
+                                  >
+                                    Edit
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  // maxWidth: "300px",
+                                  // padding: "20px",
+                                  width: "80%",
+                                  // height:"1"
+                                  // background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => <ClientEdit user={client}/>}
+                              </Popup>
+                            </div>
                           <div>
                             <Popup
                               className="popup"

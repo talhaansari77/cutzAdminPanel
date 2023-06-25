@@ -26,59 +26,85 @@ import Header from "../../components/Headers/Header.js";
 import axios from "axios";
 import Loader from "utilities/Loaders";
 import { Urls } from "utilities/Urls";
+import moment from "moment";
+import { ResultCounter } from "components/ResultCounter";
+import { useNavigate } from "react-router-dom";
 
 function ClientsRecord() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [clientList, setClientList] = useState([]);
   const [clientData, setClientData] = useState([]);
+  const navigate = useNavigate();
   const [clientRes, setClientRes] = useState([]);
-  const [clientEvent, setClientEvent] = useState([]);
-  const [clientTime, setClientTime] = useState([]);
-
+  const [clientEvents, setClientEvents] = useState([]);
+  const [clientGroups, setClientGroups] = useState([]);
+  const [clients, setClients] = useState([]);
+  const token=localStorage.getItem('token')
+  
   const getClientRes = async () => {
-    // setLoading(true)
+    setLoading(true)
     await axios
       .get(Urls.BaseUrl + Urls.EVENTS_RESERVATION_CLIENT + "/getall")
-      .then((r) => {
-        setClientRes(r.data);
-        // setClientData(r.data);
-        // setClientList(r.data);
-        // setLoading(false)
+      .then((reserves) => {
+        axios
+          .get(`${Urls.BaseUrl}${Urls.GET_CLIENT}/getall`)
+          .then((clients) => {
+            axios
+              .get(`${Urls.BaseUrl}${Urls.TIMING}`)
+              .then((groups) => {
+                axios
+                  .get(`${Urls.BaseUrl}${Urls.GET_EVENTS}`)
+                  .then((events) => {
+                    setClientRes(reserves.data)
+                    setClientGroups(groups.data)
+                    setClients(clients.data)
+                    setClientEvents(events.data)
+                    setLoading(false)
+                  })
+                  .catch((e) => {
+                    setLoading(false)
+                    alert(e);
+                  });
+              })
+              .catch((e) => {
+                setLoading(false)
+                alert(e);
+              });
+          })
+          .catch((e) => {
+            setLoading(false)
+            alert(e);
+          });
       })
       .catch((e) => {
-        // setLoading(false)
+        setLoading(false)
         alert(e);
       });
   };
-  const mergeClientData = async (data) => {
-    let newData = [];
-    data.map(async (i) => {
-      await axios
-        .get(`${Urls.BaseUrl}${Urls.GET_CLIENT}/${i.clientID}`, {
-          headers: {
-            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImFkbWluSWQiOiI2NDg1ZWY2Y2JlOTRhODFmMGRkNmFlNDQiLCJpYXQiOjE2ODY0OTkyNDF9.u3E7g9fljtv92TmRgjrZGrQIcxwGDCjgNOTyVINpu-A",
-          },
-          
-        })
-        .then((r) => { 
-          newData.push({ ...i, client: r.data });
-        })
-      });
-      console.log(newData)
-      console.log(newData.length)
-      console.log(JSON.stringify(newData))
-  };
-
   useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
     getClientRes();
   }, []);
 
   useEffect(() => {
-    if (clientRes.length) {
-      mergeClientData(clientRes);
-    }
-  }, [clientRes]);
+    let data=[];
+    clientRes.map((reserve)=>{
+      let client=clients.find((c)=>c._id===reserve.clientID)
+      let group=clientGroups.find((g)=>g._id===reserve.eventGroupID)
+      let event=clientEvents.find((e)=>e._id===reserve.eventID)
+      data.push({...reserve,client,group,event})
+    })
+    setClientList(data)
+    setClientData(data)
+    console.log(data)
+  }, [clientEvents]);
+
+  
+
+  
 
   return (
     <>
@@ -114,10 +140,17 @@ function ClientsRecord() {
                             placeholder="Search"
                             type="text"
                             onChange={(e) => {
-                              setSearch(e.target.value);
-                            }}
-                          />
+                              let s = e.target.value;
+                              let filterData = clientData.filter(
+                                (a) =>
+                                  a.client.firstName.toLowerCase().includes(s) ||
+                                  a.client.lastName.toLowerCase().includes(s) ||
+                                  a.client.email.toLowerCase().includes(s)
+                              );
+                              setClientList(filterData);
+                            }}/>
                         </InputGroup>
+                        <ResultCounter list={clientList}/>
                       </FormGroup>
                     </Form>
                   </div>
@@ -137,7 +170,7 @@ function ClientsRecord() {
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
                     <th scope="col">Family #</th>
-                    <th scope="col">Organization</th>
+                    {/* <th scope="col">Organization</th> */}
                     <th scope="col">Event</th>
                     <th scope="col">Location</th>
                     <th scope="col">Reserved Time</th>
@@ -157,19 +190,19 @@ function ClientsRecord() {
                             </Media>
                           </Media>
                         </th>
-                        <td>joe</td>
-                        <td>David</td>
-                        <td>6</td>
-                        <td>
+                        <td>{c.client.firstName}</td>
+                        <td>{c.client.lastName}</td>
+                        <td>{c.client.familySize}</td>
+                        {/* <td>
                           <div className="d-flex align-items-center">
-                            <span className="mr-2">FIMA</span>
+                            <span className="mr-2">{c.client.organization}</span>
                           </div>
-                        </td>
-                        <td className="text-right">Food Distribution</td>
-                        <td className="text-right">26255 Schoolcraft St</td>
-                        <td className="text-right">2/12/2023 1:00 PM</td>
+                        </td> */}
+                        <td className="text-right">{c?.event?.eventType}</td>
+                        <td className="text-right">{c?.event?.addresses?.[0].place}</td>
+                        <td className="text-right">{moment(c?.group?.eventStartTime).utc().format("DD/MM/YY")}</td>
                         <td className="text-right">Present</td>
-                        <td className="text-right">0001</td>
+                        <td className="text-right">{c?.event?.event_id}</td>
                         {/* <td className="text-right"> */}
                         {/* <div className="d-flex"> */}
                         {/* <div><button className="edit mr-2">Edit</button></div> */}

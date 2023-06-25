@@ -34,6 +34,7 @@ import { delEvent } from "services/Event";
 import Loader from "utilities/Loaders";
 import { useSelector } from "react-redux";
 import { ResultCounter } from "components/ResultCounter";
+import EventEdit from "components/EventEdit";
 
 function ManageEvent() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ function ManageEvent() {
   const [eventData, setEventData] = useState([]);
   const [eventList, setEventList] = useState([]);
   const [eventId, setEventId] = useState("");
+  const [event, setEvent] = useState({});
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.CreateUserReducer);
   const token=localStorage.getItem('token')
@@ -180,8 +182,34 @@ function ManageEvent() {
                         <td className="text-left">2/10/2023 11:00 pm</td>
                         <td className="text-left">
                           <div className="d-flex">
-                            <div>
-                              <button className="edit mr-2">Edit</button>
+                          <div className="mr-2">
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setEvent(e)}
+                                  >
+                                    Edit
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  // maxWidth: "300px",
+                                  // padding: "20px",
+                                  width: "80%",
+                                  // height:"1"
+                                  // background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => <EventEdit user={event}/>}
+                              </Popup>
                             </div>
                             <div>
                               <Popup

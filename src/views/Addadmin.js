@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../assets/css/argon-dashboard-react.min.css";
 import { Card, Container, Row, CardHeader, Input } from "reactstrap";
 
@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Lottie from "react-lottie";
 import loaderAnimation from "assets/Loaders";
+import { Urls } from "utilities/Urls";
 const defaultOptions = {
   loop: true,
   autoplay: true,
@@ -18,6 +19,7 @@ const defaultOptions = {
 function Addadmin() {
   const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const token=localStorage.getItem('token')
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
@@ -37,7 +39,7 @@ function Addadmin() {
   const onSubmit = async () => {
     setLoading(true)
    await axios
-      .post("https://cutz-production.up.railway.app/api/v1/admin/signup", state)
+      .post(Urls.BaseUrl+"api/v1/admin/signup", state)
       .then((r) => {
         setLoading(false)
         navigateHome();
@@ -48,6 +50,13 @@ function Addadmin() {
         alert(e);
       });
   };
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, [])
+  
 
   return (
     <>

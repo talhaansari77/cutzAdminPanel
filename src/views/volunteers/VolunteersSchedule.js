@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../../assets/css/argon-dashboard-react.min.css';
 import {
   Card,
@@ -22,12 +22,87 @@ import {
 
 import Header from "components/Headers/Header.js";
 import Loader from "utilities/Loaders";
+import axios from "axios";
+import moment from "moment";
+import { Urls } from "utilities/Urls";
+import { ResultCounter } from "components/ResultCounter";
+import { useNavigate } from "react-router-dom";
 
 
 
 function VolunteersSchedule() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [volunteerList, setVolunteerList] = useState([]);
+  const [volunteerData, setVolunteerData] = useState([]);
+  const [volunteerRes, setVolunteerRes] = useState([]);
+  const [volunteerEvents, setVolunteerEvents] = useState([]);
+  const [volunteerGroups, setVolunteerGroups] = useState([]);
+  const [volunteers, setVolunteers] = useState([]);
+  const navigate = useNavigate();
+  const token=localStorage.getItem('token')
+
+  const getVolunteerRes = async () => {
+    setLoading(true)
+    await axios
+      .get(Urls.BaseUrl + Urls.EVENTS_RESERVATION_VOLUNTEER + "/getall")
+      .then((reserves) => {
+        axios
+          .get(`${Urls.BaseUrl}${Urls.GET_VOLUNTEER}/getall`)
+          .then((volunteer) => {
+            axios
+              .get(`${Urls.BaseUrl}${Urls.TIMING}`)
+              .then((groups) => {
+                axios
+                  .get(`${Urls.BaseUrl}${Urls.GET_EVENTS}`)
+                  .then((events) => {
+                    setVolunteerRes(reserves.data)
+                    setVolunteerGroups(groups.data)
+                    setVolunteers(volunteer.data)
+                    setVolunteerEvents(events.data)
+                    setLoading(false)
+                  })
+                  .catch((e) => {
+                    setLoading(false)
+                    alert(e);
+                  });
+              })
+              .catch((e) => {
+                setLoading(false)
+                alert(e);
+              });
+          })
+          .catch((e) => {
+            setLoading(false)
+            alert(e);
+          });
+      })
+      .catch((e) => {
+        setLoading(false)
+        alert(e);
+      });
+  };
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+    getVolunteerRes();
+  }, []);
+
+  useEffect(() => {
+    let data=[];
+    volunteerRes.map((reserve)=>{
+      let volunteer=volunteers.find((c)=>c._id===reserve.volunteerID)
+      let group=volunteerGroups.find((g)=>g._id===reserve.eventGroupID)
+      let event=volunteerEvents.find((e)=>e._id===reserve.eventID)
+      data.push({...reserve,volunteer,group,event})
+    })
+    setVolunteerList(data)
+    setVolunteerData(data)
+    console.log(data)
+  }, [volunteerEvents]);
+
+  
 
   return (
     <>
@@ -56,9 +131,17 @@ function VolunteersSchedule() {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input placeholder="Search" type="text" onChange={(e) => {
-                              setSearch(e.target.value);
+                              let s = e.target.value;
+                              let filterData = volunteerData.filter(
+                                (a) =>
+                                  a.volunteer.firstName.toLowerCase().includes(s) ||
+                                  a.volunteer.lastName.toLowerCase().includes(s) ||
+                                  a.volunteer.email.toLowerCase().includes(s)
+                              );
+                              setVolunteerList(filterData);
                             }}/>
                         </InputGroup>
+                        <ResultCounter list={volunteerList}/>
                       </FormGroup>
                     </Form>
 
@@ -93,162 +176,51 @@ function VolunteersSchedule() {
                 </thead>
                 <Loader loading={loading} />
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>joe</td>
-                    <td>David</td>
-                    <td>
-                      6
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">FIMA</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                    Fuasasdf@gmail.com
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St 
-                    </td>
-                  
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    {/* <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td> */}
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        <div><button className="edit mr-2">Cancel</button></div>
-                        {/* <div><button className="delete">Ban</button></div> */}
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>joe</td>
-                    <td>David</td>
-                    <td>
-                      6
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">FIMA</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                    Fuasasdf@gmail.com
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St 
-                    </td>
-                  
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    {/* <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td> */}
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
+                {volunteerList.length ? (
+                    volunteerList.map((v, index) => (
+                      <tr>
+                        <th scope="row">
+                          <Media className="align-items-center">
+                            <Media>
+                              <span className="mb-0 text-sm">{index + 1}</span>
+                            </Media>
+                          </Media>
+                        </th>
+                        <td>{v.volunteer.firstName}</td>
+                        <td>{v.volunteer.lastName}</td>
+                        <td>{v.volunteer.employer}</td>
+                        {/* <td>
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">{c.client.organization}</span>
+                          </div>
+                        </td> */}
+                        <td className="text-right">{v?.event?.eventType}</td>
+                        <td className="text-right">{v?.event?.addresses?.[0].place}</td>
+                        <td className="text-right">{moment(v?.group?.eventStartTime).utc().format("DD/MM/YY h:s A")}</td>
+                        <td className="text-right">{moment(v?.group?.eventEndTime).utc().format("DD/MM/YY h:s A")}</td>
+                        <td className="text-right">ended at</td>
+                        <td className="text-right">present at</td>
+                        <td className="text-right">
                       <div className="d-flex">
                       <div><button className="edit mr-2">Cancel</button></div>
                         {/* <div><button className="delete">Ban</button></div> */}
                       </div>
                     </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>joe</td>
-                    <td>David</td>
-                    <td>
-                      6
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">FIMA</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                    Fuasasdf@gmail.com
-                    </td>
-                    <td className="text-right">
-                    26255 Schoolcraft St 
-                    </td>
-                  
-                    {/* <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    Present 
-                    </td> */}
-                    <td className="text-right">
-                    Present 
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                    2/12/2023 1:00 PM
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                      <div><button className="edit mr-2">Cancel</button></div>
-                        {/* <div><button className="delete">Ban</button></div> */}
-                      </div>
-                    </td>
-                  </tr>
+                        {/* <td className="text-right"> */}
+                        {/* <div className="d-flex"> */}
+                        {/* <div><button className="edit mr-2">Edit</button></div> */}
+                        {/* <div><button className="delete">Cancel</button></div> */}
+                        {/* </div> */}
+                        {/* </td> */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={12} align={"center"}>
+                        No Record To Show
+                      </td>
+                    </tr>
+                  )}
                 
                 </tbody>
               </Table>

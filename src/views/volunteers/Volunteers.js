@@ -31,12 +31,14 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { delVolunteer } from "services/client";
 import { ResultCounter } from "components/ResultCounter";
+import VolunteerEdit from "components/VolunteerEdit";
 
 function Volunteers() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [volunteerId, setVolunteerId] = useState('');
+  const [volunteer, setVolunteer] = useState({});
   const [volunteerList, setVolunteerList] = useState([]);
   const [volunteerData, setVolunteerData] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
@@ -133,23 +135,6 @@ function Volunteers() {
                   {
                   volunteerList.length?
                   volunteerList.map((v, index) => (
-        //             "profilePicture": "",
-        // "_id": "6419f10ecf856ac5a3cf948f",
-        // "firstName": "abc",
-        // "lastName": "xyz",
-        // "email": "xyz@gmail.com",
-        // "phoneNumber": "03351128815",
-        // "address": "abc",
-        // "employer": "xyz",
-        // "organization": "xyz",
-        // "password": "$2b$10$2SKH59/saI7rW0/PKL5kT.JzsnO2EfSlG1PTrgks2DK/cO/NwV16C",
-        // "activeStatus": true,
-        // "volunteerStatus": true,
-        // "volunteerAttandance": "none",
-        // "volunteerExists": true,
-        // "dateCreated": "2023-03-21T18:01:50.611Z",
-        // "lastLogin": "2023-03-21T18:01:50.612Z",
-        // "__v": 0
                     <tr>
                       <th scope="row">
                         <Media className="align-items-center">
@@ -182,9 +167,35 @@ function Volunteers() {
                       </td>
                       <td className="text-left">
                         <div className="d-flex">
-                          <div>
-                            <button className="edit mr-2">Edit</button>
-                          </div>
+                        <div className="mr-2">
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setVolunteer(v)}
+                                  >
+                                    Edit
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  // maxWidth: "300px",
+                                  // padding: "20px",
+                                  width: "80%",
+                                  // height:"1"
+                                  // background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => <VolunteerEdit user={volunteer}/>}
+                              </Popup>
+                            </div>
                           <div>
                             <Popup
                               className="popup"

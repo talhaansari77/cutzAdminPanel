@@ -34,6 +34,7 @@ import Lottie from "react-lottie";
 import loaderAnimation from "assets/Loaders";
 import Loader from "utilities/Loaders";
 import { ResultCounter } from "components/ResultCounter";
+import AdminEdit from "components/AdminEdit";
 
 function Index() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ function Index() {
   const [adminData, setAdminData] = useState([]);
   const [adminList, setAdminList] = useState([]);
   const [adminId, setAdminId] = useState("");
+  const [admin, setAdmin] = useState({});
   const token = localStorage.getItem("token");
   const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
@@ -199,8 +201,34 @@ function Index() {
                         <td className="text-right">{"Old Account"}</td>
                         <td className="text-right">
                           <div className="d-flex">
-                            <div>
-                              <button className="edit mr-2">Edit</button>
+                            <div className="mr-2">
+                              <Popup
+                                className="popup"
+                                trigger={
+                                  <button
+                                    className="edit"
+                                    type="submit"
+                                    position="center"
+                                    onMouseOver={() => setAdmin(a)}
+                                  >
+                                    Edit
+                                  </button>
+                                }
+                                modal
+                                closeOnDocumentClick
+                                contentStyle={{
+                                  // maxWidth: "300px",
+                                  // padding: "20px",
+                                  width: "80%",
+                                  // height:"1"
+                                  // background: "#fff",
+                                }}
+                                overlayStyle={{
+                                  background: "rgba(0, 0, 0, 0.7)",
+                                }}
+                              >
+                                {(close) => <AdminEdit user={admin}/>}
+                              </Popup>
                             </div>
                             <div>
                               <Popup
@@ -210,7 +238,10 @@ function Index() {
                                     className="edit"
                                     type="submit"
                                     position="center"
-                                    onMouseOver={() => setAdminId(a._id)}
+                                    onMouseOver={() => {
+                                      setAdminId(a._id);
+                                      
+                                    }}
                                   >
                                     Delete
                                   </button>
@@ -252,7 +283,10 @@ function Index() {
                                         type="submit"
                                         onClick={() => {
                                           close();
-                                          delAdmin(adminId,localStorage.getItem("token"))
+                                          delAdmin(
+                                            adminId,
+                                            localStorage.getItem("token")
+                                          )
                                             .then(() => {
                                               window.location.reload();
                                             })

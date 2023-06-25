@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../../assets/css/argon-dashboard-react.min.css';
 import {
   Card,
@@ -22,12 +22,87 @@ import {
 
 import Header from "components/Headers/Header.js";
 import Loader from "utilities/Loaders";
+import { Urls } from "utilities/Urls";
+import axios from "axios";
+import moment from "moment";
+import { ResultCounter } from "components/ResultCounter";
+import { useNavigate } from "react-router-dom";
 
 
 
 function ClientsSchedule() {
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [clientList, setClientList] = useState([]);
+  const [clientData, setClientData] = useState([]);
+  const navigate = useNavigate();
+  const [clientRes, setClientRes] = useState([]);
+  const [clientEvents, setClientEvents] = useState([]);
+  const [clientGroups, setClientGroups] = useState([]);
+  const [clients, setClients] = useState([]);
+  const token=localStorage.getItem('token')
+
+  const getClientRes = async () => {
+    setLoading(true)
+    await axios
+      .get(Urls.BaseUrl + Urls.EVENTS_RESERVATION_CLIENT + "/getall")
+      .then((reserves) => {
+        axios
+          .get(`${Urls.BaseUrl}${Urls.GET_CLIENT}/getall`)
+          .then((clients) => {
+            axios
+              .get(`${Urls.BaseUrl}${Urls.TIMING}`)
+              .then((groups) => {
+                axios
+                  .get(`${Urls.BaseUrl}${Urls.GET_EVENTS}`)
+                  .then((events) => {
+                    setClientRes(reserves.data)
+                    setClientGroups(groups.data)
+                    setClients(clients.data)
+                    setClientEvents(events.data)
+                    setLoading(false)
+                  })
+                  .catch((e) => {
+                    setLoading(false)
+                    alert(e);
+                  });
+              })
+              .catch((e) => {
+                setLoading(false)
+                alert(e);
+              });
+          })
+          .catch((e) => {
+            setLoading(false)
+            alert(e);
+          });
+      })
+      .catch((e) => {
+        setLoading(false)
+        alert(e);
+      });
+  };
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+    getClientRes();
+  }, []);
+
+  useEffect(() => {
+    let data=[];
+    clientRes.map((reserve)=>{
+      let client=clients.find((c)=>c._id===reserve.clientID)
+      let group=clientGroups.find((g)=>g._id===reserve.eventGroupID)
+      let event=clientEvents.find((e)=>e._id===reserve.eventID)
+      data.push({...reserve,client,group,event})
+    })
+    setClientList(data)
+    setClientData(data)
+    console.log(data)
+  }, [clientEvents]);
+
+  
 
 
   return (
@@ -57,9 +132,17 @@ function ClientsSchedule() {
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input placeholder="Search" type="text" onChange={(e) => {
-                              setSearch(e.target.value);
+                              let s = e.target.value;
+                              let filterData = clientData.filter(
+                                (a) =>
+                                  a.client.firstName.toLowerCase().includes(s) ||
+                                  a.client.lastName.toLowerCase().includes(s) ||
+                                  a.client.email.toLowerCase().includes(s)
+                              );
+                              setClientList(filterData);
                             }}/>
                         </InputGroup>
+                        <ResultCounter list={clientList}/>
                       </FormGroup>
                     </Form>
 
@@ -80,7 +163,7 @@ function ClientsSchedule() {
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
                     <th scope="col">Family #</th>
-                    <th scope="col">Organization</th>
+                    {/* <th scope="col">Organization</th> */}
                     <th scope="col" >Event</th>
                     <th scope="col" >Location</th>
                     <th scope="col" >Reserved Time</th>
@@ -91,178 +174,50 @@ function ClientsSchedule() {
                 </thead>
                 <Loader loading={loading} />
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
+                {clientList.length ? (
+                    clientList.map((c, index) => (
+                      <tr>
+                        <th scope="row">
+                          <Media className="align-items-center">
+                            <Media>
+                              <span className="mb-0 text-sm">{index + 1}</span>
+                            </Media>
+                          </Media>
+                        </th>
+                        <td>{c.client.firstName}</td>
+                        <td>{c.client.lastName}</td>
+                        <td>{c.client.familySize}</td>
+                        {/* <td>
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">{c.client.organization}</span>
+                          </div>
+                        </td> */}
+                        <td className="text-right">{c?.event?.eventType}</td>
+                        <td className="text-right">{c?.event?.addresses?.[0].place}</td>
+                        <td className="text-right">{moment(c?.group?.eventStartTime).utc().format("DD/MM/YY")}</td>
+                        <td className="text-right">ended at</td>
+                        <td className="text-right">present at</td>
+                        <td className="text-right">
                       <div className="d-flex">
+                      <div><button className="edit mr-2">Cancel</button></div>
+                        {/* <div><button className="delete">Ban</button></div> */}
+                      </div>
+                    </td>
+                        {/* <td className="text-right"> */}
+                        {/* <div className="d-flex"> */}
                         {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        <div><button className="delete">Cancel</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        <div><button className="delete">Cancel</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                      
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-  
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        <div><button className="delete">Cancel</button></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                     
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            001
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>$2,500 USD</td>
-                    <td>$2,500 USD</td>
-                    <td>
-                      asdfsa
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">umerfarooq@gmail.com</span>
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      03037518445
-                    </td>
-                    <td className="text-right">
-                      <div className="d-flex">
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        <div><button className="delete">Cancel </button></div>
-                      </div>
-                    </td>
-                  </tr>
+                        {/* <div><button className="delete">Cancel</button></div> */}
+                        {/* </div> */}
+                        {/* </td> */}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={12} align={"center"}>
+                        No Record To Show
+                      </td>
+                    </tr>
+                  )}
                 
                 </tbody>
               </Table>

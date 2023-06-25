@@ -87,13 +87,13 @@ var routes = [
 				component: <ManageEvent />,
 				layout: "/admin",
 			},
-			{
-				path: "/admin/Events/eventrecord",
-				name: "Event Record",
-				component: <EventRecord />,
-				layout: "/admin",
+			// {
+			// 	path: "/admin/Events/eventrecord",
+			// 	name: "Event Record",
+			// 	component: <EventRecord />,
+			// 	layout: "/admin",
 
-			},
+			// },
 		],
 	},
 	// {

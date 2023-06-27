@@ -83,6 +83,7 @@ function CreateEvent() {
       .then((r) => {
         setLoading(false);
         alert("Event added successfully");
+        window.location.assign("/admin/Events/manageevent")
       })
       .catch((e) => {
         alert(e);

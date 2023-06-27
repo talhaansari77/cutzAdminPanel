@@ -35,6 +35,8 @@ import Loader from "utilities/Loaders";
 import { useSelector } from "react-redux";
 import { ResultCounter } from "components/ResultCounter";
 import EventEdit from "components/EventEdit";
+import { getOrganizations } from "services/Organization";
+import moment from "moment";
 
 function ManageEvent() {
   const navigate = useNavigate();
@@ -44,37 +46,59 @@ function ManageEvent() {
   const [eventList, setEventList] = useState([]);
   const [eventId, setEventId] = useState("");
   const [event, setEvent] = useState({});
+  const [events, setEvents] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.CreateUserReducer);
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!token) {
       navigate("/");
     }
     setLoading(true);
-    getEvent().then((r) => {
-      let response = mergeOrg(r.data);
-      setTimeout(() => {
-        setEventList(response);
-        setEventData(response);
+    getEvent()
+      .then((events) => {
+        getOrganizations()
+          .then((orgs) => {
+            axios
+              .get(`${Urls.BaseUrl}${Urls.TIMING}`)
+              .then((groups) => {
+                setEvents(events.data);
+                setOrgs(orgs.data);
+                setGroups(groups.data);
+                setLoading(false);
+              })
+              .catch((e) => {
+                setLoading(false);
+                alert(e);
+              });
+          })
+          .catch(() => {
+            setLoading(false);
+          });
+      })
+      .catch(() => {
         setLoading(false);
-      }, 1000);
-    }).catch(()=>{
-      setLoading(false);
-    })
+      });
   }, []);
 
-  const mergeOrg = (data) => {
-    let events = [];
-    data.map((e) => {
-      getOrganizationById(e.orgId).then((o) => {
-        // console.log({...e,orgName:o.data.organizationName})
-        events.push({ ...e, orgName: o.data.organizationName });
-      });
+  const mergeOrgData = () => {
+    let data = [];
+    events.map((event) => {
+      let org = orgs.find((o) => o._id === event.orgId);
+      let group=groups.find((g)=>g.eventId===event._id)
+      data.push({ ...event, org,group });
     });
-    return events;
+    setEventList(data);
+    setEventData(data);
+    console.log(data);
   };
+
+  useEffect(() => {
+    mergeOrgData();
+  }, [orgs]);
 
   const navigateHome = () => {
     // 👇️ navigate to /
@@ -110,7 +134,10 @@ function ManageEvent() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" onChange={(e) => {
+                          <Input
+                            placeholder="Search"
+                            type="text"
+                            onChange={(e) => {
                               let s = e.target.value;
                               let filterData = eventData.filter(
                                 (a) =>
@@ -119,9 +146,10 @@ function ManageEvent() {
                                   a.addresses[0].house.toLowerCase().includes(s)
                               );
                               setEventList(filterData);
-                            }}/>
+                            }}
+                          />
                         </InputGroup>
-                        <ResultCounter list={eventList}/>
+                        <ResultCounter list={eventList} />
                       </FormGroup>
                     </Form>
                   </div>
@@ -153,9 +181,8 @@ function ManageEvent() {
                   </tr>
                 </thead>
                 <Loader loading={loading} />
-                  <tbody>
-                    {
-                    eventList.length?
+                <tbody>
+                  {eventList.length ? (
                     eventList.map((e, index) => (
                       <tr>
                         <th scope="row">
@@ -175,14 +202,14 @@ function ManageEvent() {
                             </span>
                           </div>
                         </td>
-                        <td className="text-left">{e.orgName}</td>
+                        <td className="text-left">{e.org.organizationName}</td>
                         <td className="text-left">{e.eventType}</td>
                         <td className="text-left">{e.addresses[0].house}</td>
-                        <td className="text-left">2/10/2023 11:00 AM</td>
-                        <td className="text-left">2/10/2023 11:00 pm</td>
+                        <td className="text-left">{moment(e?.group?.eventStartTime).utc().format("DD/MM/YY h:s A")}</td>
+                        <td className="text-left">{moment(e?.group?.eventEndTime).utc().format("DD/MM/YY h:s A")}</td>
                         <td className="text-left">
                           <div className="d-flex">
-                          <div className="mr-2">
+                            <div className="mr-2">
                               <Popup
                                 className="popup"
                                 trigger={
@@ -208,7 +235,7 @@ function ManageEvent() {
                                   background: "rgba(0, 0, 0, 0.7)",
                                 }}
                               >
-                                {(close) => <EventEdit user={event}/>}
+                                {(close) => <EventEdit user={event} />}
                               </Popup>
                             </div>
                             <div>
@@ -261,9 +288,13 @@ function ManageEvent() {
                                         type="submit"
                                         onClick={() => {
                                           close();
-                                          delEvent(eventId).then(() => {
-                                            window.location.reload()
-                                          }).catch((e)=>{alert(e)})
+                                          delEvent(eventId)
+                                            .then(() => {
+                                              window.location.reload();
+                                            })
+                                            .catch((e) => {
+                                              alert(e);
+                                            });
                                         }}
                                       >
                                         Yes
@@ -288,14 +319,14 @@ function ManageEvent() {
                         </td>
                       </tr>
                     ))
-                    :
-                  <tr>
-                    <td colSpan={12} align={"center"}>
-                    No Record To Show
-                    </td>
-                  </tr>}
-                  </tbody>
-                
+                  ) : (
+                    <tr>
+                      <td colSpan={12} align={"center"}>
+                        No Record To Show
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </Table>
             </Card>
             <CardFooter className="py-4">

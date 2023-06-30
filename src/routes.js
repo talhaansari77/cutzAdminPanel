@@ -36,15 +36,15 @@ var routes = [
 				layout: "/admin",
 			},
 			{
-				path: "/admin/clients/clientrecord",
-				name: "client record",
-				component: <ClientsRecord />,
-				layout: "/admin",
-			},
-			{
 				path: "/admin/clients/clientschedule",
 				name: "client schedule",
 				component: <ClientsSchedule />,
+				layout: "/admin",
+			},
+			{
+				path: "/admin/clients/clientrecord",
+				name: "client record",
+				component: <ClientsRecord />,
 				layout: "/admin",
 			},
 		],

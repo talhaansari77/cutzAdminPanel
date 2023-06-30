@@ -176,29 +176,7 @@ function CreateEvent() {
                 <div></div>
               </div>
 
-              {/* <div className="d-flex justify-content-around pt-5">
-                <div className="inputborder">
-                  <Input
-                    className="inputborder"
-                    type="text"
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
-                    placeholder="Organaization"
-                  ></Input>
-                </div>
-                <div className="inputborder">
-                  <Input
-                    className="inputborder"
-                    type="text"
-                    placeholder="Type Event"
-                    value={state.eventType}
-                    onChange={(e) =>
-                      setState({ ...state, eventType: e.target.value })
-                    }
-                  ></Input>
-                </div>
-                <div></div>
-              </div> */}
+              
 
               <div className="d-flex justify-content-around pt-5">
                 <div className="inputborder">
@@ -377,9 +355,8 @@ function CreateEvent() {
                     <option selected hidden disabled>
                       Group service period
                     </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                    <option value="30 min">30 min</option>
+                    <option value="1 hour">1 hour</option>
                   </select>
                 </div>
                 <div>{/* <Input>asdf</Input> */}</div>

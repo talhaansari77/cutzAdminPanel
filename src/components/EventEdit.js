@@ -16,10 +16,10 @@ const defaultOptions = {
     preserveAspectRatio: "xMidYMid slice",
   },
 };
-function EventEdit({user}) {
+function EventEdit({ event }) {
   const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [state, setState] = useState(user);
+  const [state, setState] = useState(event);
 
   const navigate = useNavigate();
 
@@ -28,12 +28,16 @@ function EventEdit({user}) {
     navigate("/admin/index");
   };
   const onSubmit = async () => {
+    let data = {
+      eventType: state.eventType,
+      addresses: [state.addresses[0], state.addresses[1]],
+    };
     setLoading(true);
     await axios
-      .post(Urls.BaseUrl+"api/v1/admin/signup", state)
+      .patch(Urls.BaseUrl + "api/v1/event/" + event._id, data)
       .then((r) => {
         setLoading(false);
-        navigateHome();
+        window.location.reload();
         // alert(r.data.message)
       })
       .catch((e) => {
@@ -54,112 +58,97 @@ function EventEdit({user}) {
             >
               <div>
                 <h1 className="text-center d-flex align-item-center justify-content-center">
-                  Edit Event
+                  Add Event
                 </h1>
               </div>
             </CardHeader>
+            <div className="d-flex justify-content-around pt-5">
+              {/* <div className="inputborder">
+                  <Input
+                    className="inputborder"
+                    type="text"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    placeholder="Organaization"
+                  ></Input>
+                </div> */}
+              <div className="inputborder">
+                <Input
+                  className="inputborder"
+                  type="text"
+                  placeholder="Type Event"
+                  value={state.eventType}
+                  onChange={(e) =>
+                    setState({ ...state, eventType: e.target.value })
+                  }
+                ></Input>
+              </div>
+              <div></div>
+            </div>
 
-            <div className="d-flex justify-content-around ">
+            <div className="d-flex justify-content-around pt-5">
               <div className="inputborder">
                 <Input
                   className="inputborder"
                   type="text"
-                  placeholder="First Name"
-                  value={state.firstName}
+                  value={state.addresses[0].place}
                   onChange={(e) =>
-                    setState({ ...state, firstName: e.target.value })
+                    setState({
+                      ...state,
+                      addresses: [
+                        { ...state.addresses[0], place: e.target.value },
+                        state.addresses[1],
+                      ],
+                    })
                   }
+                  placeholder="Place"
                 ></Input>
               </div>
               <div className="inputborder">
                 <Input
                   className="inputborder"
                   type="text"
-                  placeholder="Last Name"
-                  value={state.lastName}
+                  placeholder="House"
+                  value={state.addresses[0].house}
                   onChange={(e) =>
-                    setState({ ...state, lastName: e.target.value })
+                    setState({
+                      ...state,
+                      addresses: [
+                        { ...state.addresses[0], house: e.target.value },
+                        state.addresses[1],
+                      ],
+                    })
                   }
                 ></Input>
               </div>
               <div>{/* <Input>asdf</Input> */}</div>
             </div>
-            <div className="d-flex justify-content-around ">
-              <div className="inputborder">
-                <Input
-                  className="inputborder"
-                  type="email"
-                  placeholder="Email"
-                  value={state.email}
-                  onChange={(e) =>
-                    setState({ ...state, email: e.target.value })
-                  }
-                ></Input>
-              </div>
-              <div className="inputborder">
-                <Input
-                  className="inputborder"
-                  type="tel"
-                  placeholder="Phone"
-                  value={state.phoneNumber}
-                  onChange={(e) =>
-                    setState({ ...state, phoneNumber: e.target.value })
-                  }
-                ></Input>
-              </div>
-              <div>{/* <Input>asdf</Input> */}</div>
-            </div>
-            {/* <div className="d-flex justify-content-around ">
-              <div className="inputborder">
-                <Input
-                  className="inputborder"
-                  type="password"
-                  placeholder="Password"
-                  value={state.password}
-                  onChange={(e) =>
-                    setState({ ...state, password: e.target.value })
-                  }
-                ></Input>
-              </div>
-              <div className="inputborder">
-                <Input
-                  className="inputborder"
-                  type="password"
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                ></Input>
-              </div>
-            </div> */}
-            <div className="d-flex justify-content-around ">
-              <div className="inputborder">
+            <div className="pt-5 d-flex justify-content-center">
+              <div
+                className="inputborder"
+                style={{ width: "100%", paddingRight: "1%" }}
+              >
                 <Input
                   className="inputborder"
                   type="text"
-                  placeholder="Organaization"
-                  value={state.organization}
+                  placeholder="Zip"
+                  value={state.addresses[0].zip}
                   onChange={(e) =>
-                    setState({ ...state, organization: e.target.value })
+                    setState({
+                      ...state,
+                      addresses: [
+                        { ...state.addresses[0], zip: e.target.value },
+                        state.addresses[1],
+                      ],
+                    })
                   }
                 ></Input>
               </div>
-              <div className="inputborder">
-                <Input
-                  className="inputborder"
-                  type="text"
-                  placeholder="Address"
-                  value={state.address}
-                  onChange={(e) =>
-                    setState({ ...state, address: e.target.value })
-                  }
-                ></Input>
-              </div>
-              <div>{/* <Input>asdf</Input> */}</div>
             </div>
 
             <div className="addevents">
               <button className="mainbuttons" onClick={onSubmit}>
-                Save
+                Add Event
               </button>
               {loading ? (
                 <Lottie

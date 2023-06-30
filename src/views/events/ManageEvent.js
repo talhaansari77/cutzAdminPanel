@@ -37,6 +37,8 @@ import { ResultCounter } from "components/ResultCounter";
 import EventEdit from "components/EventEdit";
 import { getOrganizations } from "services/Organization";
 import moment from "moment";
+import DataTable from "react-data-table-component";
+import { MyBottomTabs } from "components/MyBottomTabs";
 
 function ManageEvent() {
   const navigate = useNavigate();
@@ -52,6 +54,181 @@ function ManageEvent() {
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.CreateUserReducer);
   const token = localStorage.getItem("token");
+  const columns = [
+    {
+      name: "ID",
+      selector: (row, index) => index + 1,
+      // sortable: true,
+    },
+    {
+      name: "# People",
+      sortable: true,
+      selector: (row) => row.eventCapacity,
+    },
+    {
+      name: "# Groups",
+      sortable: true,
+      selector: (row) => 8,
+    },
+    {
+      name: "Group Size",
+      sortable: true,
+      selector: (row) => Math.floor(row.eventCapacity / 8),
+    },
+    {
+      name: "Group Time",
+      sortable: true,
+      selector: (row) => row.groupServicePeriod + " hour",
+    },
+    {
+      name: "Organization",
+      sortable: true,
+      selector: (row) => row.org.organizationName,
+    },
+    {
+      name: "Event",
+      sortable: true,
+      selector: (row) => row.eventType,
+    },
+    {
+      name: "Location",
+      sortable: true,
+      selector: (row) => row.addresses[0].house,
+    },
+    {
+      name: "Start Time",
+      sortable: true,
+      selector: (row) =>
+        moment(row?.group?.eventStartTime).utc().format("DD/MM/YY h:s A"),
+    },
+    {
+      name: "End Time",
+      sortable: true,
+      selector: (row) =>
+        moment(row?.group?.eventEndTime).utc().format("DD/MM/YY h:s A"),
+    },
+    {
+      name: "Action",
+      sortable: true,
+      selector: (row) => <MyActionBtn e={row} />,
+    },
+    {
+      name: "Report",
+      sortable: true,
+      selector: (row) => (
+        <div className="d-flex">
+          <div>
+            <img
+              width={30}
+              src={require("../../assets/img/imges/Group (2).png")}
+              alt=""
+              style={{ color: "black" }}
+            />
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const MyActionBtn = ({ e }) => (
+    <div className="">
+      <div className="mr-2">
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setEvent(e)}
+            >
+              Edit
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            // maxWidth: "300px",
+            // padding: "20px",
+            width: "80%",
+            // height:"1"
+            // background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => <EventEdit event={event} />}
+        </Popup>
+      </div>
+      <div>
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setEventId(e._id)}
+            >
+              Delete
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            maxWidth: "300px",
+            padding: "20px",
+            background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => (
+            <div>
+              <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                Are you sure you want to delete this item
+              </h2>
+              {/* <p>Are you sure you want to proceed?</p> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <button
+                  className="mainbuttonss "
+                  onClick={() => {
+                    // handleNo();
+                    close();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  className="mainbuttonss"
+                  type="submit"
+                  onClick={() => {
+                    close();
+                    delEvent(eventId)
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      });
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     if (!token) {
@@ -88,8 +265,8 @@ function ManageEvent() {
     let data = [];
     events.map((event) => {
       let org = orgs.find((o) => o._id === event.orgId);
-      let group=groups.find((g)=>g.eventId===event._id)
-      data.push({ ...event, org,group });
+      let group = groups.find((g) => g.eventId === event._id);
+      data.push({ ...event, org, group });
     });
     setEventList(data);
     setEventData(data);
@@ -141,7 +318,7 @@ function ManageEvent() {
                               let s = e.target.value;
                               let filterData = eventData.filter(
                                 (a) =>
-                                  a.orgName.toLowerCase().includes(s) ||
+                                  a.org.organizationName.toLowerCase().includes(s) ||
                                   a.eventType.toLowerCase().includes(s) ||
                                   a.addresses[0].house.toLowerCase().includes(s)
                               );
@@ -160,176 +337,26 @@ function ManageEvent() {
                   </div>
                 </div>
               </CardHeader>
-              <Table
-                className="align-items-center table-dark table-flush"
-                responsive
-              >
-                <thead className="thead-dark">
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col"># People</th>
-                    <th scope="col"># Groups</th>
-                    <th scope="col">Group Size</th>
-                    <th scope="col">Group Time</th>
-                    <th scope="col">Organization</th>
-                    <th scope="col">Event</th>
-                    <th scope="col">Location</th>
-                    <th scope="col">Start Time </th>
-                    <th scope="col">End Time</th>
-                    <th scope="col">Action</th>
-                    <th scope="col">Report</th>
-                  </tr>
-                </thead>
-                <Loader loading={loading} />
-                <tbody>
-                  {eventList.length ? (
-                    eventList.map((e, index) => (
-                      <tr>
-                        <th scope="row">
-                          <Media className="align-items-center">
-                            <Media>
-                              <span className="mb-0 text-sm">{index + 1}</span>
-                            </Media>
-                          </Media>
-                        </th>
-                        <td>{e.eventCapacity}</td>
-                        <td>8</td>
-                        <td>{Math.floor(e.eventCapacity / 8)}</td>
-                        <td>
-                          <div className="d-flex align-items-center">
-                            <span className="mr-2">
-                              {e.groupServicePeriod} hour
-                            </span>
-                          </div>
-                        </td>
-                        <td className="text-left">{e.org.organizationName}</td>
-                        <td className="text-left">{e.eventType}</td>
-                        <td className="text-left">{e.addresses[0].house}</td>
-                        <td className="text-left">{moment(e?.group?.eventStartTime).utc().format("DD/MM/YY h:s A")}</td>
-                        <td className="text-left">{moment(e?.group?.eventEndTime).utc().format("DD/MM/YY h:s A")}</td>
-                        <td className="text-left">
-                          <div className="d-flex">
-                            <div className="mr-2">
-                              <Popup
-                                className="popup"
-                                trigger={
-                                  <button
-                                    className="edit"
-                                    type="submit"
-                                    position="center"
-                                    onMouseOver={() => setEvent(e)}
-                                  >
-                                    Edit
-                                  </button>
-                                }
-                                modal
-                                closeOnDocumentClick
-                                contentStyle={{
-                                  // maxWidth: "300px",
-                                  // padding: "20px",
-                                  width: "80%",
-                                  // height:"1"
-                                  // background: "#fff",
-                                }}
-                                overlayStyle={{
-                                  background: "rgba(0, 0, 0, 0.7)",
-                                }}
-                              >
-                                {(close) => <EventEdit user={event} />}
-                              </Popup>
-                            </div>
-                            <div>
-                              <Popup
-                                className="popup"
-                                trigger={
-                                  <button
-                                    className="edit"
-                                    type="submit"
-                                    position="center"
-                                    onMouseOver={() => setEventId(e._id)}
-                                  >
-                                    Delete
-                                  </button>
-                                }
-                                modal
-                                closeOnDocumentClick
-                                contentStyle={{
-                                  maxWidth: "300px",
-                                  padding: "20px",
-                                  background: "#fff",
-                                }}
-                                overlayStyle={{
-                                  background: "rgba(0, 0, 0, 0.7)",
-                                }}
-                              >
-                                {(close) => (
-                                  <div>
-                                    <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
-                                      Are you sure you want to delete this item
-                                    </h2>
-                                    {/* <p>Are you sure you want to proceed?</p> */}
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "space-evenly",
-                                      }}
-                                    >
-                                      <button
-                                        className="mainbuttonss "
-                                        onClick={() => {
-                                          // handleNo();
-                                          close();
-                                        }}
-                                      >
-                                        No
-                                      </button>
-                                      <button
-                                        className="mainbuttonss"
-                                        type="submit"
-                                        onClick={() => {
-                                          close();
-                                          delEvent(eventId)
-                                            .then(() => {
-                                              window.location.reload();
-                                            })
-                                            .catch((e) => {
-                                              alert(e);
-                                            });
-                                        }}
-                                      >
-                                        Yes
-                                      </button>
-                                    </div>
-                                  </div>
-                                )}
-                              </Popup>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="text-right">
-                          <div className="d-flex">
-                            <div>
-                              <img
-                                width={30}
-                                src={require("../../assets/img/imges/Group (2).png")}
-                                alt=""
-                              />
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={12} align={"center"}>
-                        No Record To Show
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
+              {/* <Loader /> */}
+              <DataTable
+                customStyles={{
+                  headRow: {
+                    style: {
+                      backgroundColor: "#F07E2B",
+                      color: "white",
+                      fontWeight: "bold",
+                    },
+                  },
+                }}
+                progressPending={loading}
+                // progressComponent={<Loader />}
+                columns={columns}
+                data={eventList}
+                pagination
+                striped
+              />
             </Card>
-            <CardFooter className="py-4">
+            {/* <CardFooter className="py-4">
               <nav aria-label="...">
                 <Pagination
                   className="pagination justify-content-end mb-0"
@@ -380,133 +407,10 @@ function ManageEvent() {
                   </PaginationItem>
                 </Pagination>
               </nav>
-            </CardFooter>
+            </CardFooter> */}
           </div>
         </Row>
-        <div className="header bg-gradient-info pb-3 pt-5 pt-md-5">
-          <Container fluid>
-            <div className="header-body">
-              {/* Card stats */}
-              <Row>
-                <Col lg="6" xl="3">
-                  <Card className="card-stats mb-4 mb-xl-0">
-                    <CardBody>
-                      <Row>
-                        <div className="col">
-                          <CardTitle
-                            tag="h5"
-                            className="text-uppercase text-muted mb-0"
-                          >
-                            New Accounts
-                          </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">125</span>
-                        </div>
-                        <Col className="col-auto">
-                          <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
-                            <i className="fas fa-chart-bar" />
-                          </div>
-                        </Col>
-                      </Row>
-                      <p className="mt-3 mb-0 text-muted text-sm">
-                        <span className="text-success mr-2">
-                          <i className="fa fa-arrow-up" />
-                          +02%
-                        </span>{" "}
-                        <span className="text-nowrap">1 day</span>
-                      </p>
-                    </CardBody>
-                  </Card>
-                </Col>
-                <Col lg="6" xl="3">
-                  <Card className="card-stats mb-4 mb-xl-0">
-                    <CardBody>
-                      <Row>
-                        <div className="col">
-                          <CardTitle
-                            tag="h5"
-                            className="text-uppercase text-muted mb-0"
-                          >
-                            Total Accounts
-                          </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">5000</span>
-                        </div>
-                        <Col className="col-auto">
-                          <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
-                            <i className="fas fa-chart-pie" />
-                          </div>
-                        </Col>
-                      </Row>
-                      <p className="mt-3 mb-0 text-muted text-sm">
-                        <span className="text-danger mr-2">
-                          {/* <i className="fas fa-arrow-down" /> */}
-                        </span>{" "}
-                        <span className="text-nowrap">Accounts</span>
-                      </p>
-                    </CardBody>
-                  </Card>
-                </Col>
-                <Col lg="6" xl="3">
-                  <Card className="card-stats mb-4 mb-xl-0">
-                    <CardBody>
-                      <Row>
-                        <div className="col">
-                          <CardTitle
-                            tag="h5"
-                            className="text-uppercase text-muted mb-0"
-                          >
-                            Active Accounts
-                          </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">3000</span>
-                        </div>
-                        <Col className="col-auto">
-                          <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
-                            <i className="fas fa-users" />
-                          </div>
-                        </Col>
-                      </Row>
-                      <p className="mt-3 mb-0 text-muted text-sm">
-                        <span className="text-warning mr-2">
-                          <i className="fas fa-arrow-down" />
-                          +14%
-                        </span>{" "}
-                        <span className="text-nowrap">30 days</span>
-                      </p>
-                    </CardBody>
-                  </Card>
-                </Col>
-                <Col lg="6" xl="3">
-                  <Card className="card-stats mb-4 mb-xl-0">
-                    <CardBody>
-                      <Row>
-                        <div className="col">
-                          <CardTitle
-                            tag="h5"
-                            className="text-uppercase text-muted mb-0"
-                          >
-                            Inactive Accounts
-                          </CardTitle>
-                          <span className="h2 font-weight-bold mb-0">1000</span>
-                        </div>
-                        <Col className="col-auto">
-                          <div className="icon icon-shape bg-info text-white rounded-circle shadow">
-                            <i className="fas fa-percent" />
-                          </div>
-                        </Col>
-                      </Row>
-                      <p className="mt-3 mb-0 text-muted text-sm">
-                        <span className="text-success mr-2">
-                          <i className="fas fa-arrow-up" />
-                          +21%
-                        </span>{" "}
-                        <span className="text-nowrap">30 days</span>
-                      </p>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            </div>
-          </Container>
-        </div>
+        <MyBottomTabs/>
       </Container>
     </>
   );

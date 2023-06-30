@@ -2,7 +2,7 @@ import loaderAnimation from "assets/Loaders";
 import React from "react";
 import Lottie from "react-lottie";
 
-const Loader = ({loading}) => {
+const Loader = ({ loading }) => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -12,17 +12,21 @@ const Loader = ({loading}) => {
     },
   };
   return (
-    loading?
     <div
-    style={{
+      style={{
         position: "absolute",
         marginLeft: "70vh",
         top: "30vh",
       }}
     >
-      <Lottie style={{}} options={defaultOptions} height={100} width={100} isClickToPauseDisabled />
+      <Lottie
+        style={{}}
+        options={defaultOptions}
+        height={100}
+        width={100}
+        isClickToPauseDisabled
+      />
     </div>
-    :<></>
   );
 };
 

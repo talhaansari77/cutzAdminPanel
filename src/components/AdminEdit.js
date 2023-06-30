@@ -28,12 +28,24 @@ function AdminEdit({user}) {
     navigate("/admin/index");
   };
   const onSubmit = async () => {
+    let data = {
+      firstName: state.firstName,
+      lastName: state.lastName,
+      email: state.email,
+      phoneNumber: state.phoneNumber,
+      organization: state.organization,
+      address: state.address,
+    };
     setLoading(true);
     await axios
-      .post(Urls.BaseUrl+"api/v1/admin/signup", state)
+      .patch(Urls.BaseUrl+"api/v1/admin/"+user._id, data,{
+        headers:{
+          Authorization:"Bearer "+localStorage.getItem("token")
+        }
+      })
       .then((r) => {
         setLoading(false);
-        navigateHome();
+        window.location.reload()
         // alert(r.data.message)
       })
       .catch((e) => {

@@ -77,12 +77,24 @@ function VolunteersRecord() {
     {
       name: "Reserved Time",
       sortable: true,
-      selector: (row) => moment(row?.group?.eventStartTime).utc().format("DD/MM/YY h:s A"),
+      selector: (row) => moment(row?.group?.eventStartTime).utc().format("MM/DD/YY h:s A"),
     },
     {
       name: "End Time",
       sortable: true,
-      selector: (row) => moment(row?.group?.eventEndTime).utc().format("DD/MM/YY h:s A"),
+      selector: (row) => moment(row?.group?.eventEndTime).utc().format("MM/DD/YY h:s A"),
+    },
+    {
+      name: "Check In",
+      sortable: true,
+      selector: (row) =>
+        row.checkIN?moment().utc().format("MM/DD/YY"):"null"
+    },
+    {
+      name: "Check Out",
+      sortable: true,
+      selector: (row) =>
+      row.checkOut?moment().utc().format("MM/DD/YY"):"null"
     },
     {
       name: "Status",
@@ -228,68 +240,7 @@ function VolunteersRecord() {
                 pagination
                 striped
               />
-              <Table
-                className="align-items-center table-dark table-flush"
-                responsive
-              >
-                <thead className="thead-dark">
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Organization</th>
-                    <th scope="col">Event</th>
-                    <th scope="col">Location</th>
-                    <th scope="col">Reserved Time</th>
-                    <th scope="col">End Time</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Event ID</th>
-                  </tr>
-                </thead>
-                <Loader loading={loading} />
-                <tbody>
-                {volunteerList.length ? (
-                    volunteerList.map((v, index) => (
-                      <tr>
-                        <th scope="row">
-                          <Media className="align-items-center">
-                            <Media>
-                              <span className="mb-0 text-sm">{index + 1}</span>
-                            </Media>
-                          </Media>
-                        </th>
-                        <td>{v.volunteer.firstName}</td>
-                        <td>{v.volunteer.lastName}</td>
-                        <td>{v.volunteer.employer}</td>
-                        {/* <td>
-                          <div className="d-flex align-items-center">
-                            <span className="mr-2">{c.client.organization}</span>
-                          </div>
-                        </td> */}
-                        <td className="text-right">{v?.event?.eventType}</td>
-                        <td className="text-right">{v?.event?.addresses?.[0].place}</td>
-                        <td className="text-right">{moment(v?.group?.eventStartTime).utc().format("DD/MM/YY h:s A")}</td>
-                        <td className="text-right">{moment(v?.group?.eventEndTime).utc().format("DD/MM/YY h:s A")}</td>
-                        <td className="text-right">ended at</td>
-                        <td className="text-right">{v?.event?.event_id}</td>
-                        
-                        {/* <td className="text-right"> */}
-                        {/* <div className="d-flex"> */}
-                        {/* <div><button className="edit mr-2">Edit</button></div> */}
-                        {/* <div><button className="delete">Cancel</button></div> */}
-                        {/* </div> */}
-                        {/* </td> */}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={12} align={"center"}>
-                        No Record To Show
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
+              
             </Card>
             
           </div>

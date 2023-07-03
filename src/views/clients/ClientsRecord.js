@@ -78,7 +78,19 @@ function ClientsRecord() {
       name: "Reserved Time",
       sortable: true,
       selector: (row) =>
-        moment(row?.group?.eventStartTime).utc().format("DD/MM/YY"),
+        moment(row?.group?.eventStartTime).utc().format("MM/DD/YY"),
+    },
+    {
+      name: "Check In",
+      sortable: true,
+      selector: (row) =>
+        row.checkIN?moment().utc().format("MM/DD/YY"):"null"
+    },
+    {
+      name: "Check Out",
+      sortable: true,
+      selector: (row) =>
+      row.checkOut?moment().utc().format("MM/DD/YY"):"null"
     },
     {
       name: "Status",

@@ -34,17 +34,19 @@ import { ResultCounter } from "components/ResultCounter";
 import VolunteerEdit from "components/VolunteerEdit";
 import DataTable from "react-data-table-component";
 import { MyBottomTabs } from "components/MyBottomTabs";
+import { banVolunteer } from "services/client";
+import { unBanVolunteer } from "services/client";
 
 function Volunteers() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [volunteerId, setVolunteerId] = useState('');
+  const [volunteerId, setVolunteerId] = useState("");
   const [volunteer, setVolunteer] = useState({});
   const [volunteerList, setVolunteerList] = useState([]);
   const [volunteerData, setVolunteerData] = useState([]);
   const { user } = useSelector((state) => state.CreateUserReducer);
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem("token");
   const columns = [
     {
       name: "ID",
@@ -94,7 +96,7 @@ function Volunteers() {
     {
       name: "Last Seen",
       sortable: true,
-      selector: (row) => moment(row.lastLogin).utc().format("DD/MM/YY"),
+      selector: (row) => moment(row.lastLogin).utc().format("MM/DD/YY"),
     },
     {
       name: "Status",
@@ -108,7 +110,7 @@ function Volunteers() {
     {
       name: "Joined Date",
       sortable: true,
-      selector: (row) => moment(row.dateCreated).utc().format("DD/MM/YY"),
+      selector: (row) => moment(row.dateCreated).utc().format("MM/DD/YY"),
     },
     {
       name: "Action",
@@ -118,115 +120,197 @@ function Volunteers() {
   ];
   const MyActionBtn = ({ v }) => (
     <div className="">
-                        <div className="mr-2">
-                              <Popup
-                                className="popup"
-                                trigger={
-                                  <button
-                                    className="edit"
-                                    type="submit"
-                                    position="center"
-                                    onMouseOver={() => setVolunteer(v)}
-                                  >
-                                    Edit
-                                  </button>
-                                }
-                                modal
-                                closeOnDocumentClick
-                                contentStyle={{
-                                  // maxWidth: "300px",
-                                  // padding: "20px",
-                                  width: "80%",
-                                  // height:"1"
-                                  // background: "#fff",
-                                }}
-                                overlayStyle={{
-                                  background: "rgba(0, 0, 0, 0.7)",
-                                }}
-                              >
-                                {(close) => <VolunteerEdit user={volunteer}/>}
-                              </Popup>
-                            </div>
-                          <div>
-                            <Popup
-                              className="popup"
-                              trigger={
-                                <button
-                                  className="edit"
-                                  type="submit"
-                                  position="center"
-                                  onMouseOver={() => setVolunteerId(v._id)}
-                                >
-                                  Delete
-                                </button>
-                              }
-                              modal
-                              closeOnDocumentClick
-                              contentStyle={{
-                                maxWidth: "300px",
-                                padding: "20px",
-                                background: "#fff",
-                              }}
-                              overlayStyle={{
-                                background: "rgba(0, 0, 0, 0.7)",
-                              }}
-                            >
-                              {(close) => (
-                                <div>
-                                  <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
-                                    Are you sure you want to delete this item
-                                  </h2>
-                                  {/* <p>Are you sure you want to proceed?</p> */}
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      justifyContent: "space-evenly",
-                                    }}
-                                  >
-                                    <button
-                                      className="mainbuttonss "
-                                      onClick={() => {
-                                        // handleNo();
-                                        close();
-                                      }}
-                                    >
-                                      No
-                                    </button>
-                                    <button
-                                      className="mainbuttonss"
-                                      type="submit"
-                                      onClick={() => {
-                                        close();
-                                        delVolunteer(volunteerId,localStorage.getItem("token"))
-                                          .then(() => {
-                                            window.location.reload();
-                                          })
-                                          .catch((e) => {
-                                            alert(e);
-                                          });
-                                      }}
-                                    >
-                                      Yes
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </Popup>
-                          </div>
-                        </div>
+      <div className="mr-2">
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setVolunteer(v)}
+            >
+              Edit
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            // maxWidth: "300px",
+            // padding: "20px",
+            width: "80%",
+            // height:"1"
+            // background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => <VolunteerEdit user={volunteer} />}
+        </Popup>
+      </div>
+      <div>
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setVolunteerId(v._id)}
+            >
+              Delete
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            maxWidth: "300px",
+            padding: "20px",
+            background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => (
+            <div>
+              <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                Are you sure you want to delete this item
+              </h2>
+              {/* <p>Are you sure you want to proceed?</p> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <button
+                  className="mainbuttonss "
+                  onClick={() => {
+                    // handleNo();
+                    close();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  className="mainbuttonss"
+                  type="submit"
+                  onClick={() => {
+                    close();
+                    delVolunteer(volunteerId, localStorage.getItem("token"))
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      });
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
+      <BanButton v={v}/>
+    </div>
   );
+
+  const BanButton=({v})=>(
+    <div>
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setVolunteerId(v._id)}
+              style={{backgroundColor:v.activeStatus? '':"#F07E2B"}}
+              >
+               {v.activeStatus?  "Ban":"unBan"}
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            maxWidth: "300px",
+            padding: "20px",
+            background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => (
+            <div>
+              <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                Are you sure you want to {v.activeStatus?  "Ban":"unBan"} this User
+              </h2>
+              {/* <p>Are you sure you want to proceed?</p> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <button
+                  className="mainbuttonss "
+                  onClick={() => {
+                    // handleNo();
+                    close();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  className="mainbuttonss"
+                  type="submit"
+                  onClick={() => {
+                    close();
+                    v.activeStatus?
+                    banVolunteer(volunteerId, localStorage.getItem("token"))
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      }):
+                      unBanVolunteer(volunteerId, localStorage.getItem("token"))
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      })
+
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
+  )
   useEffect(() => {
     if (!token) {
       navigate("/");
     }
     setLoading(true);
-    getVolunteer().then((r) => {
-      setVolunteerList(r.data);
-      setVolunteerData(r.data);
-      setLoading(false);
-    }).catch(()=>{
-      setLoading(false);
-    })
+    getVolunteer()
+      .then((r) => {
+        setVolunteerList(r.data);
+        setVolunteerData(r.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -259,7 +343,10 @@ function Volunteers() {
                               <i className="fas fa-search" />
                             </InputGroupText>
                           </InputGroupAddon>
-                          <Input placeholder="Search" type="text" onChange={(e) => {
+                          <Input
+                            placeholder="Search"
+                            type="text"
+                            onChange={(e) => {
                               let s = e.target.value;
                               let filterData = volunteerData.filter(
                                 (a) =>
@@ -268,9 +355,10 @@ function Volunteers() {
                                   a.email.toLowerCase().includes(s)
                               );
                               setVolunteerList(filterData);
-                            }}/>
+                            }}
+                          />
                         </InputGroup>
-                        <ResultCounter list={volunteerList}/>
+                        <ResultCounter list={volunteerList} />
                       </FormGroup>
                     </Form>
                   </div>
@@ -296,11 +384,10 @@ function Volunteers() {
                 pagination
                 striped
               />
-              
             </Card>
           </div>
         </Row>
-        <MyBottomTabs/>
+        <MyBottomTabs />
       </Container>
     </>
   );

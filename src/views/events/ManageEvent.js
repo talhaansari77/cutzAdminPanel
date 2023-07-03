@@ -99,13 +99,13 @@ function ManageEvent() {
       name: "Start Time",
       sortable: true,
       selector: (row) =>
-        moment(row?.group?.eventStartTime).utc().format("DD/MM/YY h:s A"),
+        moment(row?.group?.eventStartTime).utc().format("MM/DD/YY h:s A"),
     },
     {
       name: "End Time",
       sortable: true,
       selector: (row) =>
-        moment(row?.group?.eventEndTime).utc().format("DD/MM/YY h:s A"),
+        moment(row?.group?.eventEndTime).utc().format("MM/DD/YY h:s A"),
     },
     {
       name: "Action",

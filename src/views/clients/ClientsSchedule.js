@@ -31,6 +31,9 @@ import { ResultCounter } from "components/ResultCounter";
 import { useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import { MyBottomTabs } from "components/MyBottomTabs";
+import {  } from "services/client";
+import Popup from "reactjs-popup";
+import { delClientReservation } from "services/client";
 
 function ClientsSchedule() {
   const [search, setSearch] = useState("");
@@ -42,6 +45,7 @@ function ClientsSchedule() {
   const [clientEvents, setClientEvents] = useState([]);
   const [clientGroups, setClientGroups] = useState([]);
   const [clients, setClients] = useState([]);
+  const [clientId, setClientId] = useState("");
   const token = localStorage.getItem("token");
   const columns = [
     {
@@ -78,7 +82,19 @@ function ClientsSchedule() {
       name: "Reserved Time",
       sortable: true,
       selector: (row) =>
-        moment(row?.group?.eventStartTime).utc().format("DD/MM/YY"),
+        moment(row?.group?.eventStartTime).utc().format("MM/DD/YY"),
+    },
+    {
+      name: "Check In",
+      sortable: true,
+      selector: (row) =>
+        row.checkIN?moment().utc().format("MM/DD/YY"):"null"
+    },
+    {
+      name: "Check Out",
+      sortable: true,
+      selector: (row) =>
+      row.checkOut?moment().utc().format("MM/DD/YY"):"null"
     },
     {
       name: "Access",
@@ -99,12 +115,72 @@ function ClientsSchedule() {
   ];
 
   const MyActionBtn = ({ c }) => (
-    <div className="d-flex">
-      <div>
-        <button className="edit mr-2">Cancel</button>
+    <div>
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setClientId(c._id)}
+            >
+              Cancel
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            maxWidth: "300px",
+            padding: "20px",
+            background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => (
+            <div>
+              <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                Are you sure you want to Cancel this 
+              </h2>
+              {/* <p>Are you sure you want to proceed?</p> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <button
+                  className="mainbuttonss "
+                  onClick={() => {
+                    // handleNo();
+                    close();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  className="mainbuttonss"
+                  type="submit"
+                  onClick={() => {
+                    close();
+                    delClientReservation(clientId, localStorage.getItem("token"))
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      });
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          )}
+        </Popup>
       </div>
-      {/* <div><button className="delete">Ban</button></div> */}
-    </div>
   );
   const getClientRes = async () => {
     setLoading(true);

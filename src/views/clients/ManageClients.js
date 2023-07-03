@@ -36,6 +36,8 @@ import { ResultCounter } from "components/ResultCounter";
 import ClientEdit from "components/ClientEdit";
 import DataTable from "react-data-table-component";
 import { MyBottomTabs } from "components/MyBottomTabs";
+import { banClient } from "services/client";
+import { unBanClient } from "services/client";
 
 function ManageClients() {
   const navigate = useNavigate();
@@ -92,7 +94,7 @@ function ManageClients() {
     {
       name: "Last Seen",
       sortable: true,
-      selector: (row) => moment(row.lastLogin).utc().format("DD/MM/YY"),
+      selector: (row) => moment(row.lastLogin).utc().format("MM/DD/YY"),
     },
     {
       name: "Status",
@@ -106,7 +108,7 @@ function ManageClients() {
     {
       name: "Joined Date",
       sortable: true,
-      selector: (row) => moment(row.dateCreated).utc().format("DD/MM/YY"),
+      selector: (row) => moment(row.dateCreated).utc().format("MM/DD/YY"),
     },
     {
       name: "Action",
@@ -211,8 +213,87 @@ function ManageClients() {
           )}
         </Popup>
       </div>
+     <BanButton c={c}/>
     </div>
   );
+
+  const BanButton=({c})=>(
+    <div>
+        <Popup
+          className="popup"
+          trigger={
+            <button
+              className="edit"
+              type="submit"
+              position="center"
+              onMouseOver={() => setClientId(c._id)}
+              style={{backgroundColor:c.activeStatus? '':"#F07E2B"}}
+            >
+             {c.activeStatus?  "Ban":"unBan"}
+            </button>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            maxWidth: "300px",
+            padding: "20px",
+            background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => (
+            <div>
+              <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                Are you sure you want to {c.activeStatus?  "Ban":"unBan"} this User
+              </h2>
+              {/* <p>Are you sure you want to proceed?</p> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <button
+                  className="mainbuttonss "
+                  onClick={() => {
+                    // handleNo();
+                    close();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  className="mainbuttonss"
+                  type="submit"
+                  onClick={() => {
+                    close();
+                    c.activeStatus?
+                    banClient(clientId, localStorage.getItem("token"))
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      }):
+                      unBanClient(clientId, localStorage.getItem("token"))
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      })
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
+  )
 
   useEffect(() => {
     if (!token) {

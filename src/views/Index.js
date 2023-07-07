@@ -43,7 +43,7 @@ function Index() {
   const columns = [
     {
       name: "ID",
-      selector: (row,index) => index+1,
+      selector: (row, index) => index + 1,
       // sortable: true,
     },
     {
@@ -84,10 +84,11 @@ function Index() {
     {
       name: "Status",
       sortable: true,
-      selector: (row) => moment(row.dateCreated).utc().format("DD/MM/YY") ===
-      moment().utc().format("DD/MM/YY")
-        ? "New Account"
-        : "Old Account",
+      selector: (row) =>
+        moment(row.dateCreated).utc().format("DD/MM/YY") ===
+        moment().utc().format("DD/MM/YY")
+          ? "New Account"
+          : "Old Account",
     },
     {
       name: "Action",
@@ -96,8 +97,6 @@ function Index() {
     },
   ];
 
-  
- 
   const navigateHome = () => {
     // 👇️ navigate to /
     navigate("/admin/addadmin");
@@ -108,6 +107,7 @@ function Index() {
   const [adminId, setAdminId] = useState("");
   const [admin, setAdmin] = useState({});
   const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
   const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
   //       // Handle "Yes" button click
@@ -228,8 +228,14 @@ function Index() {
     axios
       .get(Urls.BaseUrl + "api/v1/admin/getall")
       .then((r) => {
-        setAdminData(r.data);
-        setAdminList(r.data);
+        if (email === "innerview34@gmail.com") {
+          setAdminData(r.data);
+          setAdminList(r.data);
+        } else {
+          let owner = r.data.find((a) => a.email === email);
+          setAdminData([owner]);
+          setAdminList([owner]);
+        }
         setLoading(false);
       })
       .catch((e) => {
@@ -314,13 +320,11 @@ function Index() {
                 data={adminList}
                 pagination
                 striped
-                
               />
             </Card>
-            
           </div>
         </Row>
-        <MyBottomTabs/>
+        <MyBottomTabs />
       </Container>
     </>
   );

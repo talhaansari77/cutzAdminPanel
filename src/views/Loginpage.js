@@ -58,6 +58,7 @@ function Loginpage() {
               localStorage.setItem("token",r.data.token)
               localStorage.setItem("firstName",i.data.firstName)
               localStorage.setItem("lastName",i.data.lastName)
+              localStorage.setItem("email",i.data.email)
               setTimeout(() => {
                 navigateHome();
               }, 500);

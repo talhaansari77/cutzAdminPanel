@@ -39,6 +39,7 @@ import { getOrganizations } from "services/Organization";
 import moment from "moment";
 import DataTable from "react-data-table-component";
 import { MyBottomTabs } from "components/MyBottomTabs";
+import { reportEvent } from "services/Event";
 
 function ManageEvent() {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ function ManageEvent() {
   const [eventData, setEventData] = useState([]);
   const [eventList, setEventList] = useState([]);
   const [eventId, setEventId] = useState("");
+  const [groupId, setGroupId] = useState("");
   const [event, setEvent] = useState({});
   const [events, setEvents] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -115,20 +117,81 @@ function ManageEvent() {
     {
       name: "Report",
       sortable: true,
-      selector: (row) => (
-        <div className="d-flex">
-          <div>
-            <img
-              width={30}
-              src={require("../../assets/img/imges/Group (2).png")}
-              alt=""
-              style={{ color: "black" }}
-            />
-          </div>
-        </div>
-      ),
+      selector: (row) => <MyReportBtn e={row} />
     },
   ];
+
+  const MyReportBtn = ({ e }) => (
+    <div className="">
+      <div>
+        <Popup
+          className="popup"
+          trigger={
+            <div>
+              <img
+                width={30}
+                onMouseOver={() => setGroupId(e.group._id)}
+                src={require("../../assets/img/imges/Group (2).png")}
+                alt=""
+                style={{ color: "black",cursor:"pointer" }}
+              />
+            </div>
+          }
+          modal
+          closeOnDocumentClick
+          contentStyle={{
+            maxWidth: "300px",
+            padding: "20px",
+            background: "#fff",
+          }}
+          overlayStyle={{
+            background: "rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {(close) => (
+            <div>
+              <h2 className="text-center d-flex justfy-content-center align-item-center readyreadeem">
+                Are you sure you want to Report this Event
+              </h2>
+              {/* <p>Are you sure you want to proceed?</p> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <button
+                  className="mainbuttonss "
+                  onClick={() => {
+                    // handleNo();
+                    close();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  className="mainbuttonss"
+                  type="submit"
+                  onClick={() => {
+                    close();
+                    reportEvent(groupId)
+                      .then(() => {
+                        window.location.reload();
+                      })
+                      .catch((e) => {
+                        alert(e);
+                      });
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
+    </div>
+  );
 
   const MyActionBtn = ({ e }) => (
     <div className="">
@@ -265,8 +328,9 @@ function ManageEvent() {
     let data = [];
     events.map((event) => {
       let org = orgs.find((o) => o._id === event.orgId);
-      let group = groups.find((g) => g.eventId === event._id);
-      data.push({ ...event, org, group });
+      let group = groups.find((g) => g.eventId === event._id && g.status==='pending');
+      if(group)
+        data.push({ ...event, org, group });
     });
     setEventList(data);
     setEventData(data);
@@ -318,7 +382,9 @@ function ManageEvent() {
                               let s = e.target.value;
                               let filterData = eventData.filter(
                                 (a) =>
-                                  a.org.organizationName.toLowerCase().includes(s) ||
+                                  a.org.organizationName
+                                    .toLowerCase()
+                                    .includes(s) ||
                                   a.eventType.toLowerCase().includes(s) ||
                                   a.addresses[0].house.toLowerCase().includes(s)
                               );
@@ -410,7 +476,7 @@ function ManageEvent() {
             </CardFooter> */}
           </div>
         </Row>
-        <MyBottomTabs/>
+        <MyBottomTabs />
       </Container>
     </>
   );

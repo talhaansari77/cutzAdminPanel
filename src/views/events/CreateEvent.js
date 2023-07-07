@@ -68,10 +68,10 @@ function CreateEvent() {
         _id: "64352db63be4664fe6a9cfbf",
       },
     ],
-    eventCapacity: 99,
+    eventCapacity: 0,
     groupServicePeriod: "abc",
     volunteerCapacity: 20,
-    eventCode: "1234",
+    eventCode: "",
   });
 
   const createTiming = async (id) => {
@@ -83,7 +83,7 @@ function CreateEvent() {
       .then((r) => {
         setLoading(false);
         alert("Event added successfully");
-        window.location.assign("/admin/Events/manageevent")
+        window.location.assign("/admin/Events/manageevent");
       })
       .catch((e) => {
         alert(e);
@@ -111,12 +111,14 @@ function CreateEvent() {
       // res.organizationName
       addEvent({ ...state, orgId: res._id });
     } else {
-      createOrganization({ organizationName: orgName }).then((r)=>{
-        addEvent({ ...state, orgId: r.data.id });
-      }).catch((e) => {
-        alert(e);
-        setLoading(false);
-      });
+      createOrganization({ organizationName: orgName })
+        .then((r) => {
+          addEvent({ ...state, orgId: r.data.id });
+        })
+        .catch((e) => {
+          alert(e);
+          setLoading(false);
+        });
     }
   };
 
@@ -176,8 +178,6 @@ function CreateEvent() {
                 <div></div>
               </div>
 
-              
-
               <div className="d-flex justify-content-around pt-5">
                 <div className="inputborder">
                   <Input
@@ -236,13 +236,32 @@ function CreateEvent() {
                     }
                   ></Input>
                 </div>
+                <div
+                  className="inputborder"
+                  style={{ width: "100%", paddingRight: "1%" }}
+                >
+                  <Input
+                    className="inputborder"
+                    type="text"
+                    minLength={4}
+                    maxLength={4}
+                    placeholder="Event Code"
+                    value={state.eventCode}
+                    onChange={(e) =>
+                      setState({
+                        ...state,
+                        eventCode: e.target.value,
+                      })
+                    }
+                  ></Input>
+                </div>
               </div>
               <div className="d-flex justify-content-around pt-5">
                 <div className="inputborder">
                   <lable className="evnetcolor">Prep Event Start Time</lable>
                   <Input
                     className="inputborder"
-                    type="date"
+                    type="datetime-local"
                     placeholder="Enter a date"
                     value={timings.priorEventStartTime}
                     onChange={(e) =>
@@ -257,7 +276,7 @@ function CreateEvent() {
                   <lable className="evnetcolor">Prep Event End Time</lable>
                   <Input
                     className="inputborder"
-                    type="date"
+                    type="datetime-local"
                     placeholder="Type Event"
                     value={timings.priorEventEndTime}
                     onChange={(e) =>
@@ -275,7 +294,7 @@ function CreateEvent() {
                   <lable className="evnetcolor">Event Start Time</lable>
                   <Input
                     className="inputborder"
-                    type="date"
+                    type="datetime-local"
                     placeholder="Enter a date"
                     value={timings.eventStartTime}
                     onChange={(e) =>
@@ -287,7 +306,7 @@ function CreateEvent() {
                   <lable className="evnetcolor">Event End Time</lable>
                   <Input
                     className="inputborder"
-                    type="date"
+                    type="datetime-local"
                     placeholder="Type Event"
                     value={timings.eventEndTime}
                     onChange={(e) =>
@@ -303,7 +322,7 @@ function CreateEvent() {
                   <lable className="evnetcolor">Clean Up Start Time</lable>
                   <Input
                     className="inputborder"
-                    type="date"
+                    type="datetime-local"
                     placeholder="Enter a date"
                     value={timings.afterEventStartTime}
                     onChange={(e) =>
@@ -318,7 +337,7 @@ function CreateEvent() {
                   <lable className="evnetcolor">Clean Up End Time</lable>
                   <Input
                     className="inputborder"
-                    type="date"
+                    type="datetime-local"
                     placeholder="Type Event"
                     value={timings.afterEventEndTime}
                     onChange={(e) =>
@@ -337,7 +356,11 @@ function CreateEvent() {
                     className="inputborder"
                     type="number"
                     placeholder="Event Capacity"
-                    value={state.eventCapacity}
+                    value={
+                      state.eventCapacity
+                        ? state.eventCapacity
+                        : "Event Capacity"
+                    }
                     onChange={(e) =>
                       setState({ ...state, eventCapacity: e.target.value })
                     }

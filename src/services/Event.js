@@ -14,3 +14,7 @@ export const delEvent = async (id) => {
  return await axios
     .delete(`${Urls.BaseUrl}${Urls.GET_EVENTS}/${id}`)  
 };
+export const reportEvent = async (id) => {
+ return await axios
+    .patch(`${Urls.BaseUrl}${Urls.TIMING}/${id}`,{status:"done"})  
+};

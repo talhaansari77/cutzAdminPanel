@@ -10,9 +10,12 @@ import loaderAnimation from "assets/Loaders";
 function Loginpage() {
   const navigate = useNavigate();
 
-  const navigateHome = () => {
-    // 👇️ navigate to /
-    navigate("/admin/index");
+  const navigateHome = (email) => {
+    email === "innerview34@gmail.com"
+      ? navigate("/admin/index")
+      : navigate("/admin/clients/manageclients");
+
+      window.location.reload()
   };
 
   const [loading, setLoading] = useState(false);
@@ -48,19 +51,19 @@ function Loginpage() {
         .post(Urls.BaseUrl + Urls.ADMIN + "/login", data)
         .then((r) => {
           axios
-          .get(Urls.BaseUrl + Urls.ADMIN+"/"+r.data.id, {
-            headers: {
-              Authorization: "Bearer " + r.data.token,
-            },
-          })
-          .then((i) => {
-            // addUser({ ...i.data, token: r.data.token });
-              localStorage.setItem("token",r.data.token)
-              localStorage.setItem("firstName",i.data.firstName)
-              localStorage.setItem("lastName",i.data.lastName)
-              localStorage.setItem("email",i.data.email)
+            .get(Urls.BaseUrl + Urls.ADMIN + "/" + r.data.id, {
+              headers: {
+                Authorization: "Bearer " + r.data.token,
+              },
+            })
+            .then((i) => {
+              // addUser({ ...i.data, token: r.data.token });
+              localStorage.setItem("token", r.data.token);
+              localStorage.setItem("firstName", i.data.firstName);
+              localStorage.setItem("lastName", i.data.lastName);
+              localStorage.setItem("email", i.data.email);
               setTimeout(() => {
-                navigateHome();
+                navigateHome(i.data.email);
               }, 500);
               setLoading(false);
             })

@@ -13,123 +13,204 @@ import VolunteersRecord from "./views/volunteers/VolunteersRecord";
 import ManageEvent from "./views/events/ManageEvent";
 import EventRecord from "./views/events/EventRecord";
 import CreateEvent from "./views/events/CreateEvent";
+const email = localStorage.getItem("email");
+const owner = "innerview34@gmail.com";
+// email===owner
 
-
-var routes = [
-	{
-		path: "/index",
-		name: "Admin",
-		component: <Index />,
-		layout: "/admin",
-		icon: "fa-solid fa-users-between-lines"
-	},
-	{
-		path: "/clients",
-		name: "Clients",
-		icon: "fas fa-users-cog",
-		// layout: "/admin",
-		children: [
-			{
-				path: "/admin/clients/manageclients",
-				name: "Manage",
-				component: <ManageClients />,
-				layout: "/admin",
-			},
-			{
-				path: "/admin/clients/clientschedule",
-				name: "client schedule",
-				component: <ClientsSchedule />,
-				layout: "/admin",
-			},
-			{
-				path: "/admin/clients/clientrecord",
-				name: "client record",
-				component: <ClientsRecord />,
-				layout: "/admin",
-			},
-		],
-	},
-	{
-		path: "/vlounteers",
-		name: "Vlounteers",
-		icon: "fa-sharp fa-solid fa-user-gear",
-		layout: "/admin",
-		children: [
-			{
-				path: "/admin/vlounteers/managevolunteers",
-				name: "Manage Volunteers",
-				component: <Volunteers />,
-				layout: "/admin",
-			},
-			{
-				path: "/admin/vlounteers/volunteerschedule",
-				name: "Volunters Schedule",
-				component: <VolunteersSchedule />,
-				layout: "/admin",
-			},
-			{
-				path: "/admin/vlounteers/volunteersrecord",
-				name: "Volunteers Record",
-				component: <VolunteersRecord />,
-				layout: "/admin"
-			}
-		],
-	},
-	{
-		path: "/events",
-		name: "Events",
-		icon: "fa-solid fa-calendar-days",
-		layout: "/admin",
-		children: [
-			{
-				path: "/admin/Events/manageevent",
-				name: "Manage Event",
-				component: <ManageEvent />,
-				layout: "/admin",
-			},
-			{
-				path: "/admin/Events/eventrecord",
-				name: "Event Record",
-				component: <EventRecord />,
-				layout: "/admin",
-
-			},
-		],
-	},
-	// {
-	// 	path: "/maps",
-	// 	name: "Maps",
-	// 	icon: "ni ni-pin-3 text-orange",
-	// 	component: <Notification />,
-	// 	layout: "/admin",
-	// },
-	// {
-	// 	path: "/user-profile",
-	// 	name: "User Profile",
-	// 	icon: "ni ni-single-02 text-yellow",
-	// 	component: <Description />,
-	// 	layout: "/admin",
-	// },
-	// {
-	// 	path: "/tables",
-	// 	name: "Tables",
-	// 	icon: "ni ni-bullet-list-67 text-red",
-	// 	component: <Tables />,
-	// 	layout: "/admin",
-	// },
-	// {
-	// 	path: "/login",
-	// 	name: "Login",
-	// 	icon: "ni ni-key-25 text-info",
-	// 	component: <Login />,
-	// 	layout: "/auth",
-	// },
-	// {
-	// 	path: "/register",
-	// 	name: "Register",
-	// 	icon: "ni ni-circle-08 text-pink",
-	// 	component: <Register />,
-	// 	layout: "/auth",
-	// },
+var ownerRoutes = [
+  {
+    path: "/index",
+    name: "Admin",
+    component: <Index />,
+    layout: "/admin",
+    icon: "fa-solid fa-users-between-lines",
+  },
+  {
+    path: "/clients",
+    name: "Clients",
+    icon: "fas fa-users-cog",
+    // layout: "/admin",
+    children: [
+      {
+        path: "/admin/clients/manageclients",
+        name: "Manage",
+        component: <ManageClients />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/clients/clientschedule",
+        name: "client schedule",
+        component: <ClientsSchedule />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/clients/clientrecord",
+        name: "client record",
+        component: <ClientsRecord />,
+        layout: "/admin",
+      },
+    ],
+  },
+  {
+    path: "/vlounteers",
+    name: "Vlounteers",
+    icon: "fa-sharp fa-solid fa-user-gear",
+    layout: "/admin",
+    children: [
+      {
+        path: "/admin/vlounteers/managevolunteers",
+        name: "Manage Volunteers",
+        component: <Volunteers />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/vlounteers/volunteerschedule",
+        name: "Volunters Schedule",
+        component: <VolunteersSchedule />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/vlounteers/volunteersrecord",
+        name: "Volunteers Record",
+        component: <VolunteersRecord />,
+        layout: "/admin",
+      },
+    ],
+  },
+  {
+    path: "/events",
+    name: "Events",
+    icon: "fa-solid fa-calendar-days",
+    layout: "/admin",
+    children: [
+      {
+        path: "/admin/Events/manageevent",
+        name: "Manage Event",
+        component: <ManageEvent />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/Events/eventrecord",
+        name: "Event Record",
+        component: <EventRecord />,
+        layout: "/admin",
+      },
+    ],
+  },
+  // {
+  // 	path: "/maps",
+  // 	name: "Maps",
+  // 	icon: "ni ni-pin-3 text-orange",
+  // 	component: <Notification />,
+  // 	layout: "/admin",
+  // },
+  // {
+  // 	path: "/user-profile",
+  // 	name: "User Profile",
+  // 	icon: "ni ni-single-02 text-yellow",
+  // 	component: <Description />,
+  // 	layout: "/admin",
+  // },
+  // {
+  // 	path: "/tables",
+  // 	name: "Tables",
+  // 	icon: "ni ni-bullet-list-67 text-red",
+  // 	component: <Tables />,
+  // 	layout: "/admin",
+  // },
+  // {
+  // 	path: "/login",
+  // 	name: "Login",
+  // 	icon: "ni ni-key-25 text-info",
+  // 	component: <Login />,
+  // 	layout: "/auth",
+  // },
+  // {
+  // 	path: "/register",
+  // 	name: "Register",
+  // 	icon: "ni ni-circle-08 text-pink",
+  // 	component: <Register />,
+  // 	layout: "/auth",
+  // },
 ];
-export default routes;
+var adminRoutes = [
+ 
+  {
+    path: "/clients",
+    name: "Clients",
+    icon: "fas fa-users-cog",
+    // layout: "/admin",
+    children: [
+      {
+        path: "/admin/clients/manageclients",
+        name: "Manage",
+        component: <ManageClients />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/clients/clientschedule",
+        name: "client schedule",
+        component: <ClientsSchedule />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/clients/clientrecord",
+        name: "client record",
+        component: <ClientsRecord />,
+        layout: "/admin",
+      },
+    ],
+  },
+  {
+    path: "/vlounteers",
+    name: "Vlounteers",
+    icon: "fa-sharp fa-solid fa-user-gear",
+    layout: "/admin",
+    children: [
+      {
+        path: "/admin/vlounteers/managevolunteers",
+        name: "Manage Volunteers",
+        component: <Volunteers />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/vlounteers/volunteerschedule",
+        name: "Volunters Schedule",
+        component: <VolunteersSchedule />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/vlounteers/volunteersrecord",
+        name: "Volunteers Record",
+        component: <VolunteersRecord />,
+        layout: "/admin",
+      },
+    ],
+  },
+  {
+    path: "/events",
+    name: "Events",
+    icon: "fa-solid fa-calendar-days",
+    layout: "/admin",
+    children: [
+      {
+        path: "/admin/Events/manageevent",
+        name: "Manage Event",
+        component: <ManageEvent />,
+        layout: "/admin",
+      },
+      {
+        path: "/admin/Events/eventrecord",
+        name: "Event Record",
+        component: <EventRecord />,
+        layout: "/admin",
+      },
+    ],
+  },
+  
+];
+
+var routes=email===owner?ownerRoutes:adminRoutes
+
+
+export default routes

@@ -108,6 +108,7 @@ const AdminNavbar = (props) => {
                       type="submit"
                       onClick={() => {
                         localStorage.clear();
+                        navigate("/");
                         window.location.reload()
                       }}
                       position="center"

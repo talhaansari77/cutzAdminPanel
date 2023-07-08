@@ -107,7 +107,7 @@ function Index() {
   const [adminId, setAdminId] = useState("");
   const [admin, setAdmin] = useState({});
   const token = localStorage.getItem("token");
-  const email = localStorage.getItem("email");
+
   const { user } = useSelector((state) => state.CreateUserReducer);
   // const handleYes = () => {
   //       // Handle "Yes" button click
@@ -228,14 +228,8 @@ function Index() {
     axios
       .get(Urls.BaseUrl + "api/v1/admin/getall")
       .then((r) => {
-        if (email === "innerview34@gmail.com") {
-          setAdminData(r.data);
-          setAdminList(r.data);
-        } else {
-          let owner = r.data.find((a) => a.email === email);
-          setAdminData([owner]);
-          setAdminList([owner]);
-        }
+        setAdminData(r.data);
+        setAdminList(r.data);
         setLoading(false);
       })
       .catch((e) => {
